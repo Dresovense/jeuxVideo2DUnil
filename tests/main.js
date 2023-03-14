@@ -27,17 +27,6 @@ loadSpriteAtlas("/characters/Character_001.png", {
             run_right: {from: 6, to: 8, loop: true},
             run_up: {from: 9, to: 11, loop: true}
         }
-    },
-    "hero_battle":{
-        x: 0,
-        y: 0,
-        width: 288,
-        height: 192,
-        sliceX: 9,
-        sliceY: 6,
-        anims: {
-            slice_left: {from: 0, to: 8}
-        }
     }
 })
 
@@ -75,8 +64,8 @@ scene("test", () => {
 
     onKeyDown("right", () => {
         if(collision_dir.indexOf("right") < 0){
-            camPos(camPos().add(vec2(2, 0)))
-            player.pos.x += 2
+            player.move(RIGHT.scale(50))
+            camPos(player.pos)
         }
     })
     onKeyPress("right", () => {
@@ -85,8 +74,8 @@ scene("test", () => {
 
     onKeyDown("left", () => {
         if(collision_dir.indexOf("left") < 0){
-            camPos(camPos().add(vec2(-2,0)))
-            player.pos.x += -2
+            player.move(LEFT.scale(50))
+            camPos(player.pos)
         }
     })
     onKeyPress("left", () => {
@@ -95,8 +84,8 @@ scene("test", () => {
 
     onKeyDown("up", () => {
         if(collision_dir.indexOf("top") < 0){
-            camPos(camPos().add(vec2(0,-2)))
-            player.pos.y += -2
+            player.move(UP.scale(50))
+            camPos(player.pos)
         }
     })
     onKeyPress("up", () => {
@@ -105,8 +94,8 @@ scene("test", () => {
 
     onKeyDown("down", () => {
         if(collision_dir.indexOf("bottom") < 0){
-            camPos(camPos().add(vec2(0,2)))
-            player.pos.y += 2
+            player.move(DOWN.scale(50))
+            camPos(player.pos)
         }
     })
     onKeyPress("down", () => {
@@ -151,57 +140,24 @@ scene("test", () => {
                 sprite('plains_left'),
                 area(),
                 anchor("center"),
+                body({
+                    mass: 10000,
+                    restitution: 0
+                }),
                 "wall"
             ] ,
             't': () => [
                 sprite('plains_top'),
                 area(),
                 anchor("center"),
+                body({
+                    mass: 10000,
+                    restitution: 0
+                }),
                 "wall"
             ]
         }
     }
-
-    onCollideUpdate("wall", "player", (wall, player, collision) => {
-        /* if(wall.pos.x < player.pos.x){
-            collision_dir.push("left")
-            console.log("left")
-        }
-        if(wall.pos.x > player.pos.x){
-            collision_dir.push("right")
-            console.log("right")
-
-        }
-        if(wall.pos.y < player.pos.y){
-            collision_dir.push("top")
-            console.log("top")
-
-        }
-        if(wall.pos.y > player.pos.y){
-            collision_dir.push("botttom")
-            console.log("botttom")
-        } */
-        console.log("here")
-        console.log(collision)
-        if(collision.isLeft()){
-            collision_dir.push("right")
-            console.log("left")
-        }
-        if(collision.isRight()){
-            collision_dir.push("left")
-            console.log("right")
-
-        }
-        if(collision.isTop()){
-            collision_dir.push("bottom")
-            console.log("top")
-
-        }
-        if(collision.isBottom()){
-            collision_dir.push("top")
-            console.log("botttom")
-        }
-    })
 
     onCollideEnd("wall", "player", () => {
         collision_dir = []
