@@ -12,16 +12,16 @@ loadSpriteAtlas("/tilesets/plains.png", {
     "plains_left": {x: 16, y: 16, width: 16, height: 16},
     "plains_top": {x: 30, y: 0, width: 16, height: 16},
 })
-loadSpriteAtlas("/characters/Character_001.png", {
+loadSpriteAtlas("/characters/inagi.png", {
     "hero":{
         x: 0,
         y: 0,
-        width: 72,
-        height: 96,
+        width: 144,
+        height: 195,
         sliceX: 3,
         sliceY: 4,
         anims: {
-            idle_front: {from: 0, to: 0, loop: true},
+            idle_front: {from: 1, to: 1, loop: true},
             run_down: {from: 0, to: 2, loop: true},
             run_left: {from: 3, to: 5, loop: true},
             run_right: {from: 6, to: 8, loop: true},
@@ -68,6 +68,7 @@ scene("test", () => {
         z(1),
         body(),
         "player",
+        scale(0.4),
     ]);
 
 
