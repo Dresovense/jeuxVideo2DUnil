@@ -53,50 +53,46 @@ scene("test", () => {
         sprite("hero", {anim: "idle_front"}),
         pos(center()),
         anchor("center"),
-        area(),
+        area({
+            shape: new Rect(vec2(0), 12, 18),
+            offset: vec2(0,3)
+        }),
+        width(16),
+        height(16),
         z(1),
         body(),
         "player",
     ]);
 
-
-    let collision_dir = []
+    const SPEED = 50
 
     onKeyDown("right", () => {
-        if(collision_dir.indexOf("right") < 0){
-            player.move(RIGHT.scale(50))
-            camPos(player.pos)
-        }
+        player.move(RIGHT.scale(SPEED))
+        camPos(player.pos)
     })
     onKeyPress("right", () => {
         player.play("run_right")
     })
 
     onKeyDown("left", () => {
-        if(collision_dir.indexOf("left") < 0){
-            player.move(LEFT.scale(50))
-            camPos(player.pos)
-        }
+        player.move(LEFT.scale(SPEED))
+        camPos(player.pos)
     })
     onKeyPress("left", () => {
         player.play("run_left")
     })
 
     onKeyDown("up", () => {
-        if(collision_dir.indexOf("top") < 0){
-            player.move(UP.scale(50))
-            camPos(player.pos)
-        }
+        player.move(UP.scale(SPEED))
+        camPos(player.pos)
     })
     onKeyPress("up", () => {
         player.play("run_up")
     })
 
     onKeyDown("down", () => {
-        if(collision_dir.indexOf("bottom") < 0){
-            player.move(DOWN.scale(50))
-            camPos(player.pos)
-        }
+        player.move(DOWN.scale(SPEED))
+        camPos(player.pos)
     })
     onKeyPress("down", () => {
         player.play("run_down")
@@ -141,7 +137,7 @@ scene("test", () => {
                 area(),
                 anchor("center"),
                 body({
-                    mass: 10000,
+                    mass: 10000000000000000000,
                     restitution: 0
                 }),
                 "wall"
@@ -151,17 +147,13 @@ scene("test", () => {
                 area(),
                 anchor("center"),
                 body({
-                    mass: 10000,
+                    mass: 10000000000000000000000,
                     restitution: 0
                 }),
                 "wall"
             ]
         }
     }
-
-    onCollideEnd("wall", "player", () => {
-        collision_dir = []
-    })
   
     addLevel(map, levelOne)
   
