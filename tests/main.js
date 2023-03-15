@@ -29,6 +29,20 @@ loadSpriteAtlas("/characters/Character_001.png", {
         }
     }
 })
+loadSpriteAtlas("/objects/chest_01.png", {
+    "chest":{
+        x: 0,
+        y: 0,
+        width: 64,
+        height: 16,
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle_front: {from: 0, to: 0, loop: true},
+            open: {from: 0, to: 3}
+        }
+    }
+})
 
 
 
@@ -54,8 +68,8 @@ scene("test", () => {
         pos(center()),
         anchor("center"),
         area({
-            shape: new Rect(vec2(0), 12, 18),
-            offset: vec2(0,3)
+            shape: new Rect(vec2(0), 12, 12),
+            offset: vec2(0,5)
         }),
         width(16),
         height(16),
@@ -104,7 +118,7 @@ scene("test", () => {
     })
 
     onKeyPress("space", () => {
-        let bullet = add([
+        add([
             rect(5,5),
             area(),
             pos(player.pos),
@@ -115,10 +129,21 @@ scene("test", () => {
         ])
     })
 
+    onCollideUpdate("player", "chest", (player, chest) => {
+        onKeyPress("enter", () => {
+            chest.play("open")
+        })
+    })
+
     onCollide("bullet", "wall", (bullet, wall) => {
         destroy(bullet)
-        destroy(wall)
+        wall.hurt(1)
+        wall.on("death", () => {
+            destroy(wall)
+        })
     })
+
+
 
     onUpdate(() => {
         if(!isKeyDown("left") && !isKeyDown("right") && !isKeyDown("up") && !isKeyDown("down")){
@@ -128,7 +153,7 @@ scene("test", () => {
 
 
 
-    const map = [
+    const mapOne = [
         'ggggggggggggggggggggtggggggggggg',
         'ggggggggggggggggggggtggggggggg',
         'gggttttlggggggggggggtggggggggg',
@@ -162,7 +187,9 @@ scene("test", () => {
                     mass: 10000000000000000000,
                     restitution: 0
                 }),
-                "wall"
+                "wall",
+                health(8)
+
             ] ,
             't': () => [
                 sprite('plains_top'),
@@ -172,12 +199,50 @@ scene("test", () => {
                     mass: 10000000000000000000000,
                     restitution: 0
                 }),
-                "wall"
+                "wall",
+                health(8)
+            ]
+        }
+    }
+
+    const mapTwo = [
+        '                               ',
+        '                               ',
+        '                               ',
+        '                               ',
+        '             c                 ',
+        '                               ',
+        '                               ',
+        '                               ',
+        '                         c      ',
+        '                               ',
+        '               c               ',
+        '      c                        ',
+        '                               ',
+        '                               ',
+        '                               ',
+    ]
+
+    const levelTwo = {
+        tileWidth: 16,
+        tileHeight: 16,
+        tiles:{
+            'c': () => [
+                sprite('chest'),
+                anchor("center"),
+                z(2),
+                area(),
+                body({
+                    mass: 10000000000000000000,
+                    restitution: 0
+                }),
+                "chest",
             ]
         }
     }
   
-    addLevel(map, levelOne)
+    addLevel(mapOne, levelOne)
+    addLevel(mapTwo, levelTwo)
   
 
 })
