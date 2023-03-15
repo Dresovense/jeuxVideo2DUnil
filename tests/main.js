@@ -65,6 +65,7 @@ scene("test", () => {
     ]);
 
     const SPEED = 50
+    let direction = DOWN    //changer selon la position de départ
 
     onKeyDown("right", () => {
         player.move(RIGHT.scale(SPEED))
@@ -72,6 +73,7 @@ scene("test", () => {
     })
     onKeyPress("right", () => {
         player.play("run_right")
+        direction = RIGHT
     })
 
     onKeyDown("left", () => {
@@ -80,6 +82,7 @@ scene("test", () => {
     })
     onKeyPress("left", () => {
         player.play("run_left")
+        direction = LEFT
     })
 
     onKeyDown("up", () => {
@@ -88,6 +91,7 @@ scene("test", () => {
     })
     onKeyPress("up", () => {
         player.play("run_up")
+        direction = UP
     })
 
     onKeyDown("down", () => {
@@ -96,6 +100,24 @@ scene("test", () => {
     })
     onKeyPress("down", () => {
         player.play("run_down")
+        direction = DOWN
+    })
+
+    onKeyPress("space", () => {
+        let bullet = add([
+            rect(5,5),
+            area(),
+            pos(player.pos),
+            color(255, 0, 0),
+            anchor("center"),
+            move(direction, 100),
+            "bullet"
+        ])
+    })
+
+    onCollide("bullet", "wall", (bullet, wall) => {
+        destroy(bullet)
+        destroy(wall)
     })
 
     onUpdate(() => {
