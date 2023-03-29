@@ -148,16 +148,9 @@ scene("donjon", () => {
 
     //background moves with the player
     let background = add([
-       /*  {
-          draw() {
-            drawSprite("background", {
-                pos: vec2(0, 0),
-                width: width(),
-                height: height(),
-                tiled: true
-              });
-          },
-        }, */
+        sprite("grass", {width: width(), height: height()}),
+        pos(player.pos),
+        anchor("center"),
       ]);
       
 
@@ -169,7 +162,7 @@ scene("donjon", () => {
         '',
         '',
         '',
-        '',
+        '          233333333333333333333333333333333333333333333333333333333',
         '          23333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333334',
         '          1                                                                                                      1',
         '          1                                                                                                      1',
