@@ -25,13 +25,14 @@ loadSpriteAtlas("sprites/characters/yasuna1.png", {
     }
 })
 loadSpriteAtlas("sprites/tilesets/Dungeon_A2.png", {
-    "ground":{
+    "test":{
         x: 0,
-        y: 192,
+        y: 0,
         height: 64,
         width: 64,
     }
 })
+loadSprite("ground", "sprites/background/stone_tile.png")
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
     "bat":{
         x: 0,
@@ -54,10 +55,10 @@ loadSpriteAtlas("sprites/ennemies/Monster.png", {
 scene("donjon", () => {
     const SPEED = 100
     let direction = vec2(0,0)    //changer selon la position de départ
-
+    
     //add player sprite
     let player = add([
-        sprite("bat", {anim: "idle_up"}),
+        sprite("player", {anim: "idle_up"}),
         pos(500,500),
         anchor("center"),
         area({
@@ -69,13 +70,17 @@ scene("donjon", () => {
         body(),
         "player",
     ]);
+    let background_position = player.pos
     camPos(player.pos)
 
     //add controls and animations
     onKeyDown("right", () => {
         player.move(RIGHT.scale(SPEED))
         camPos(player.pos)
-        background.pos = player.pos
+        if(player.pos.x > background_position.x + 80){
+            background_position = background_position.add(vec2(80,0))
+            background.pos = background.pos.add(vec2(80,0))
+        }
     })
     onKeyPress("right", () => {
         direction = direction.add(RIGHT)
@@ -89,7 +94,12 @@ scene("donjon", () => {
     onKeyDown("left", () => {
         player.move(LEFT.scale(SPEED))
         camPos(player.pos)
-        background.pos = player.pos
+        console.log(background_position)
+        console.log(player.pos)
+        if(player.pos.x < background_position.x - 80){
+            background_position = background_position.add(vec2(-80,0))
+            background.pos = background.pos.add(vec2(-80,0))
+        }
     })
     onKeyPress("left", () => {
         direction = direction.add(LEFT)
@@ -103,7 +113,10 @@ scene("donjon", () => {
     onKeyDown("up", () => {
         player.move(UP.scale(SPEED))
         camPos(player.pos)
-        background.pos = player.pos
+        if(player.pos.y < background_position.y - 80){
+            background_position = background_position.add(vec2(0,-80))
+            background.pos = background.pos.add(vec2(0,-80))
+        }
     })
     onKeyPress("up", () => {
         direction = direction.add(UP)
@@ -117,7 +130,10 @@ scene("donjon", () => {
     onKeyDown("down", () => {
         player.move(DOWN.scale(SPEED))
         camPos(player.pos)
-        background.pos = player.pos
+        if(player.pos.y > background_position.y + 80){
+            background_position = background_position.add(vec2(0,80))
+            background.pos = background.pos.add(vec2(0,80))
+        }
     })
     onKeyPress("down", () => {
         console.log("press")
@@ -137,8 +153,28 @@ scene("donjon", () => {
         sprite("ground", {width: width(), height: height()}),
         pos(player.pos),
         anchor("center"),
+        scale(2),
+        z(-1)
     ]);
     
+    addLevel([
+        "       5        ",
+        "           5    ",
+        "           5    ",
+        "       5    5    ",
+        "       5    5    ",
+        "  5         5    ",
+        "     5      5    ",
+    ],{
+        tileWidth: 32,
+        tileHeight: 32,
+        tiles: {
+            "5": () => [
+                sprite("test"),
+                anchor("center")
+            ]
+        }
+    })
   
 
 })
