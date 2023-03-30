@@ -16,10 +16,10 @@ loadSpriteAtlas("sprites/characters/yasuna1.png", {
         sliceX: 12,
         sliceY: 8,
         anims: {
-            walk_up: {from: 36, to: 38, loop: true},
-            walk_left: {from: 12, to: 14, loop: true},
-            walk_down: {from: 0, to: 2, loop: true},
-            walk_right: {from: 24, to: 26, loop: true},
+            up: {from: 36, to: 38, loop: true},
+            left: {from: 12, to: 14, loop: true},
+            down: {from: 0, to: 2, loop: true},
+            right: {from: 24, to: 26, loop: true},
             idle_up: {from: 1, to: 1, loop: true}
         }
     }
@@ -32,6 +32,23 @@ loadSpriteAtlas("sprites/tilesets/Dungeon_A2.png", {
         width: 64,
     }
 })
+loadSpriteAtlas("sprites/ennemies/Monster.png", {
+    "bat":{
+        x: 0,
+        y: 0,
+        width: 574,
+        height: 384,
+        sliceX: 12,
+        sliceY: 8,
+        anims: {
+            down: {from: 0, to: 2, loop: true},
+            left: {from: 12, to: 14, loop: true},
+            right: {from: 24, to: 26, loop: true},
+            up: {from: 36, to: 38, loop: true},
+            idle_up: {from: 36, to: 36, loop: true}
+        }
+    }
+})
   
 
 scene("donjon", () => {
@@ -40,7 +57,7 @@ scene("donjon", () => {
 
     //add player sprite
     let player = add([
-        sprite("player", {anim: "idle_up"}),
+        sprite("bat", {anim: "idle_up"}),
         pos(500,500),
         anchor("center"),
         area({
@@ -120,7 +137,7 @@ scene("donjon", () => {
         sprite("ground", {width: width(), height: height()}),
         pos(player.pos),
         anchor("center"),
-      ]);
+    ]);
     
   
 
@@ -131,17 +148,17 @@ go('donjon')
 
 function check_movement(direction, player){
     if(direction.y == 1){
-        player.play("walk_down")
+        player.play("down")
     }
     else if(direction.y == -1){
-        player.play("walk_up")
+        player.play("up")
     }
     else{
         if(direction.x == 1){
-            player.play("walk_right")
+            player.play("right")
         }
         else if(direction.x == -1){
-            player.play("walk_left")
+            player.play("left")
         }
         else{
             player.play("idle_up")
