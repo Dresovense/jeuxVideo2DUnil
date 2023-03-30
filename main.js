@@ -7,60 +7,29 @@ kaboom({
 
 //load sprites
 loadRoot("assets/")
-loadSpriteAtlas("sprites/characters/player.png", {
+loadSpriteAtlas("sprites/characters/yasuna1.png", {
     "player":{
         x: 0,
         y: 0,
-        width: 832,
-        height: 1344,
-        sliceX: 13,
-        sliceY: 21,
+        width: 576,
+        height: 384,
+        sliceX: 12,
+        sliceY: 8,
         anims: {
-            walk_up: {from: 104, to: 112, loop: true},
-            walk_left: {from: 117, to: 125, loop: true},
-            walk_down: {from: 130, to: 138, loop: true},
-            walk_right: {from: 143, to: 151, loop: true},
-            idle_up: {from: 26, to: 27, loop: true}
+            walk_up: {from: 36, to: 38, loop: true},
+            walk_left: {from: 12, to: 14, loop: true},
+            walk_down: {from: 0, to: 2, loop: true},
+            walk_right: {from: 24, to: 26, loop: true},
+            idle_up: {from: 1, to: 1, loop: true}
         }
     }
 })
-loadSprite("grass", "sprites/tilesets/grass.png")
-loadSpriteAtlas("sprites/tilesets/fences.png", {
-    "fence1":{
+loadSpriteAtlas("sprites/tilesets/Dungeon_A2.png", {
+    "ground":{
         x: 0,
-        y: 16,
-        width: 16,
-        height: 16,
-    },
-    "fence2":{
-        x: 16,
-        y: 0,
-        width: 16,
-        height: 16
-    },
-    "fence3":{
-        x: 32,
-        y: 48,
-        width: 16,
-        height: 16
-    },
-    "fence4":{
-        x: 48,
-        y: 0,
-        width: 16,
-        height: 16
-    },
-    "fence5":{
-        x: 48,
-        y: 32,
-        width: 16,
-        height: 16
-    },
-    "fence6":{
-        x: 16,
-        y: 32,
-        width: 16,
-        height: 16
+        y: 192,
+        height: 64,
+        width: 64,
     }
 })
   
@@ -148,111 +117,11 @@ scene("donjon", () => {
 
     //background moves with the player
     let background = add([
-        sprite("grass", {width: width(), height: height()}),
+        sprite("ground", {width: width(), height: height()}),
         pos(player.pos),
         anchor("center"),
       ]);
-      
-
-
-    const mapLayerOne = [
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '          233333333333333333333333333333333333333333333333333333333',
-        '          23333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333334',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          1                                                                                                      1',
-        '          63333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333335',
-    ]
-
-    const spritesLayerOne = {
-        tileWidth: 16,
-        tileHeight: 16,
-        tiles:{
-            '1': () => [
-                sprite('fence1'),
-                anchor("center"),
-                area(),
-                body({
-                    isStatic: true, 
-                }),
-            ],
-            '2': () => [
-                sprite('fence2'),
-                anchor("center"),
-                area(),
-                body({
-                    isStatic: true, 
-                }),
-            ],
-            '3': () => [
-                sprite('fence3'),
-                anchor("center"),
-                area(),
-                body({
-                    isStatic: true, 
-                }),
-            ],
-            '4': () => [
-                sprite('fence4'),
-                anchor("center"),
-                area(),
-                body({
-                    isStatic: true, 
-                }),
-            ],
-            '5': () => [
-                sprite('fence5'),
-                anchor("center"),
-                area(),
-                body({
-                    isStatic: true, 
-                }),
-            ],
-            '6': () => [
-                sprite('fence6'),
-                anchor("center"),
-                area(),
-                body({
-                    isStatic: true, 
-                }),
-            ],
-        }
-    }
-
-    addLevel(mapLayerOne, spritesLayerOne)
-
+    
   
 
 })
