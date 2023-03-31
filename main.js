@@ -94,8 +94,6 @@ scene("donjon", () => {
     onKeyDown("left", () => {
         player.move(LEFT.scale(SPEED))
         camPos(player.pos)
-        console.log(background_position)
-        console.log(player.pos)
         if(player.pos.x < background_position.x - 80){
             background_position = background_position.add(vec2(-80,0))
             background.pos = background.pos.add(vec2(-80,0))
@@ -136,14 +134,12 @@ scene("donjon", () => {
         }
     })
     onKeyPress("down", () => {
-        console.log("press")
         direction = direction.add(DOWN)
         check_movement(direction, player)
     })
     onKeyRelease("down", () => {
         direction = direction.sub(DOWN)
         check_movement(direction, player)
-        console.log("release")
     })
 
 
@@ -175,12 +171,50 @@ scene("donjon", () => {
             ]
         }
     })
-  
+    
 
+    //add enemy bat
+    let bat_direction = RIGHT
+    let bat_SPEED = 50
+    let bat = add([
+        sprite("bat", {anim: "idle_up"}),
+        pos(400,500),
+        anchor("center"),
+        area({
+            shape: new Rect(vec2(0), 32, 32),
+            offset: vec2(0, 12)
+        }),
+        scale(0.35),
+        z(1),
+        body(),
+        "bat",
+    ]);
+
+    
+    // Set the enemy's behavior to run continuously
+    loop(randi(1,3), () => {
+        let directions = [RIGHT, LEFT, UP, DOWN]
+        bat_direction = bat_direction.add(directions[randi(4)]).unit()
+        console.log(bat_direction)
+        if(bat_direction.x == 0 && bat_direction.y == 0){
+            let directions = [RIGHT, LEFT, UP, DOWN]
+            bat_direction = bat_direction.add(directions[randi(4)]).unit()
+        }
+    })
+    onUpdate("bat", (bat) => {
+        let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
+        if(distance_player_bat < 100){
+            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat_SPEED + 30)); // Move towards the player
+        }
+        else{
+            let movement = bat_direction.scale(bat_SPEED)
+            bat.move(movement)
+        }
+    })
+    
 })
 
 go('donjon')
-
 
 function check_movement(direction, player){
     if(direction.y == 1){
