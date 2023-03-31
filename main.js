@@ -174,7 +174,7 @@ scene("donjon", () => {
     
 
     //add enemy bat
-    let bat_direction = RIGHT
+    //let bat_direction = RIGHT
     let bat_SPEED = 50
     let bat = add([
         sprite("bat", {anim: "idle_up"}),
@@ -188,26 +188,50 @@ scene("donjon", () => {
         z(1),
         body(),
         "bat",
+        {
+            bat_direction: RIGHT
+        }
+    ]);
+
+    let bat2 = add([
+        sprite("bat", {anim: "idle_up"}),
+        pos(400,500),
+        anchor("center"),
+        area({
+            shape: new Rect(vec2(0), 32, 32),
+            offset: vec2(0, 12)
+        }),
+        scale(0.35),
+        z(1),
+        body(),
+        "bat",
+        {
+            bat_direction: RIGHT
+        }
     ]);
 
     
     // Set the enemy's behavior to run continuously
-    loop(randi(1,3), () => {
-        let directions = [RIGHT, LEFT, UP, DOWN]
-        bat_direction = bat_direction.add(directions[randi(4)]).unit()
-        console.log(bat_direction)
-        if(bat_direction.x == 0 && bat_direction.y == 0){
+    for(let i = 0; i < get("bat").length; i++){
+        bat = get("bat")[i]
+        console.log(bat)
+        loop(randi(1,3), () => {
             let directions = [RIGHT, LEFT, UP, DOWN]
-            bat_direction = bat_direction.add(directions[randi(4)]).unit()
-        }
-    })
+            bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
+            console.log(bat.bat_direction)
+            if(bat.bat_direction.x == 0 && bat.bat_direction.y == 0){
+                let directions = [RIGHT, LEFT, UP, DOWN]
+                bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
+            }
+        })
+    }
     onUpdate("bat", (bat) => {
         let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
         if(distance_player_bat < 100){
             bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat_SPEED + 30)); // Move towards the player
         }
         else{
-            let movement = bat_direction.scale(bat_SPEED)
+            let movement = bat.bat_direction.scale(bat_SPEED)
             bat.move(movement)
         }
     })
