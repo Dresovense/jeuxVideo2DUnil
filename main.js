@@ -61,14 +61,18 @@ scene("donjon", () => {
         sprite("player", {anim: "idle_up"}),
         pos(500,500),
         anchor("center"),
+        health(50),
         area({
             shape: new Rect(vec2(0), 32, 32),
-            offset: vec2(0, 12)
+            offset: vec2(0, 12),
         }),
         scale(0.5),
         z(1),
         body(),
         "player",
+        {
+            playerInvincible: false
+        }
     ]);
     let background_position = player.pos
     camPos(player.pos)
@@ -77,10 +81,7 @@ scene("donjon", () => {
     onKeyDown("right", () => {
         player.move(RIGHT.scale(SPEED))
         camPos(player.pos)
-        if(player.pos.x > background_position.x + 80){
-            background_position = background_position.add(vec2(80,0))
-            background.pos = background.pos.add(vec2(80,0))
-        }
+        background_position = background_following(player, background, background_position)
     })
     onKeyPress("right", () => {
         direction = direction.add(RIGHT)
@@ -94,10 +95,7 @@ scene("donjon", () => {
     onKeyDown("left", () => {
         player.move(LEFT.scale(SPEED))
         camPos(player.pos)
-        if(player.pos.x < background_position.x - 80){
-            background_position = background_position.add(vec2(-80,0))
-            background.pos = background.pos.add(vec2(-80,0))
-        }
+        background_position = background_following(player, background, background_position)
     })
     onKeyPress("left", () => {
         direction = direction.add(LEFT)
@@ -111,10 +109,7 @@ scene("donjon", () => {
     onKeyDown("up", () => {
         player.move(UP.scale(SPEED))
         camPos(player.pos)
-        if(player.pos.y < background_position.y - 80){
-            background_position = background_position.add(vec2(0,-80))
-            background.pos = background.pos.add(vec2(0,-80))
-        }
+        background_position = background_following(player, background, background_position)
     })
     onKeyPress("up", () => {
         direction = direction.add(UP)
@@ -128,10 +123,7 @@ scene("donjon", () => {
     onKeyDown("down", () => {
         player.move(DOWN.scale(SPEED))
         camPos(player.pos)
-        if(player.pos.y > background_position.y + 80){
-            background_position = background_position.add(vec2(0,80))
-            background.pos = background.pos.add(vec2(0,80))
-        }
+        background_position = background_following(player, background, background_position)
     })
     onKeyPress("down", () => {
         direction = direction.add(DOWN)
@@ -182,12 +174,12 @@ scene("donjon", () => {
         anchor("center"),
         area({
             shape: new Rect(vec2(0), 32, 32),
-            offset: vec2(0, 12)
+            offset: vec2(0, 12),
         }),
         scale(0.35),
         z(1),
-        body(),
         "bat",
+        "monster",
         {
             bat_direction: RIGHT
         }
@@ -199,12 +191,12 @@ scene("donjon", () => {
         anchor("center"),
         area({
             shape: new Rect(vec2(0), 32, 32),
-            offset: vec2(0, 12)
+            offset: vec2(0, 12),
         }),
         scale(0.35),
         z(1),
-        body(),
         "bat",
+        "monster",
         {
             bat_direction: RIGHT
         }
@@ -214,11 +206,9 @@ scene("donjon", () => {
     // Set the enemy's behavior to run continuously
     for(let i = 0; i < get("bat").length; i++){
         bat = get("bat")[i]
-        console.log(bat)
         loop(randi(1,3), () => {
             let directions = [RIGHT, LEFT, UP, DOWN]
             bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
-            console.log(bat.bat_direction)
             if(bat.bat_direction.x == 0 && bat.bat_direction.y == 0){
                 let directions = [RIGHT, LEFT, UP, DOWN]
                 bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
@@ -234,6 +224,13 @@ scene("donjon", () => {
             let movement = bat.bat_direction.scale(bat_SPEED)
             bat.move(movement)
         }
+    })
+
+
+    //bat, player collision
+    onCollide("monster", "player", (monster, player) => {
+        taking_damage(monster, player)
+        background_position = background_following(player, background, background_position)
     })
     
 })
@@ -258,4 +255,35 @@ function check_movement(direction, player){
             player.play("idle_up")
         }
     }
+}
+
+function background_following(player, background, background_position){
+    if(player.pos.y > background_position.y + 80){
+        background_position = background_position.add(vec2(0,80))
+        background.pos = background.pos.add(vec2(0,80))
+    }
+    if(player.pos.y < background_position.y - 80){
+        background_position = background_position.add(vec2(0,-80))
+        background.pos = background.pos.add(vec2(0,-80))
+    }
+    if(player.pos.x < background_position.x - 80){
+        background_position = background_position.add(vec2(-80,0))
+        background.pos = background.pos.add(vec2(-80,0))
+    }
+    if(player.pos.x > background_position.x + 80){
+        background_position = background_position.add(vec2(80,0))
+        background.pos = background.pos.add(vec2(80,0))
+    }
+    return background_position
+}
+
+function taking_damage(monster, player){
+    //movement
+    const knockbackDirection = player.pos.sub(monster.pos).unit();
+    player.move(knockbackDirection.scale(1000));
+    camPos(player.pos)
+
+    //health
+    player.hurt(5)
+    console.log(player.hp())
 }
