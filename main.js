@@ -280,7 +280,7 @@ function background_following(player, background, background_position){
 function taking_damage(monster, player){
     //movement
     const knockbackDirection = player.pos.sub(monster.pos).unit();
-    player.move(knockbackDirection.scale(1000));
+    player.move(knockbackDirection.scale(1500));
     camPos(player.pos)
 
     //health
