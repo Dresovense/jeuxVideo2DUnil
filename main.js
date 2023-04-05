@@ -24,6 +24,17 @@ loadSpriteAtlas("sprites/characters/yasuna1.png", {
         }
     }
 })
+loadSpriteAtlas("sprites/characters/yasuna1 2.png", {
+    "player1":{
+        x: 0,
+        y: 0,
+        width: 432,
+        height: 288,
+        sliceX: 9,
+        sliceY: 6,
+
+    }
+})
 loadSpriteAtlas("sprites/tilesets/Dungeon_A2.png", {
     "test":{
         x: 0,
