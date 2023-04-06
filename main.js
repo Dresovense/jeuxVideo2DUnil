@@ -152,7 +152,7 @@ scene("donjon", () => {
         sprite("ground", {width: width(), height: height()}),
         pos(player.pos),
         anchor("center"),
-        scale(2),
+        scale(1.5),
         z(-1)
     ]);
     
@@ -269,21 +269,21 @@ function check_movement(direction, player){
 }
 
 function background_following(player, background, background_position){
-    if(player.pos.y > background_position.y + 80){
-        background_position = background_position.add(vec2(0,80))
-        background.pos = background.pos.add(vec2(0,80))
+    if(player.pos.y > background_position.y + 60){
+        background_position = background_position.add(vec2(0,60))
+        background.pos = background.pos.add(vec2(0,60))
     }
-    if(player.pos.y < background_position.y - 80){
-        background_position = background_position.add(vec2(0,-80))
-        background.pos = background.pos.add(vec2(0,-80))
+    if(player.pos.y < background_position.y - 60){
+        background_position = background_position.add(vec2(0,-60))
+        background.pos = background.pos.add(vec2(0,-60))
     }
-    if(player.pos.x < background_position.x - 80){
-        background_position = background_position.add(vec2(-80,0))
-        background.pos = background.pos.add(vec2(-80,0))
+    if(player.pos.x < background_position.x - 60){
+        background_position = background_position.add(vec2(-60,0))
+        background.pos = background.pos.add(vec2(-60,0))
     }
-    if(player.pos.x > background_position.x + 80){
-        background_position = background_position.add(vec2(80,0))
-        background.pos = background.pos.add(vec2(80,0))
+    if(player.pos.x > background_position.x + 60){
+        background_position = background_position.add(vec2(60,0))
+        background.pos = background.pos.add(vec2(60,0))
     }
     return background_position
 }
