@@ -61,6 +61,20 @@ loadSpriteAtlas("sprites/ennemies/Monster.png", {
         }
     }
 })
+loadSpriteAtlas("sprites/objects/swordslash2.png", {
+    "sword":{
+        x: 0,
+        y: 0,
+        width: 480,
+        height: 55,
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            slash: {from: 0, to: 4, speed: 24},
+            idle: {from: 0, to: 0, loop: true}
+        }
+    }
+})
   
 
 scene("donjon", () => {
@@ -85,12 +99,24 @@ scene("donjon", () => {
             playerInvincible: false
         }
     ]);
+    sword = add([
+        sprite("sword", {anim: "idle"}),
+        pos(player.pos.x, player.pos.y),
+        opacity(0),
+        anchor("center"),
+        scale(0.4),
+        z(1),
+        "sword"
+    ])
+    //sword.scale.y = -0.5
     let background_position = player.pos
+    let swordUsed = false
     camPos(player.pos)
 
     //add controls and animations
     onKeyDown("right", () => {
         player.move(RIGHT.scale(SPEED))
+        sword.move(RIGHT.scale(SPEED))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -105,6 +131,7 @@ scene("donjon", () => {
 
     onKeyDown("left", () => {
         player.move(LEFT.scale(SPEED))
+        sword.move(LEFT.scale(SPEED))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -119,6 +146,7 @@ scene("donjon", () => {
 
     onKeyDown("up", () => {
         player.move(UP.scale(SPEED))
+        sword.move(UP.scale(SPEED))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -133,6 +161,7 @@ scene("donjon", () => {
 
     onKeyDown("down", () => {
         player.move(DOWN.scale(SPEED))
+        sword.move(DOWN.scale(SPEED))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -143,6 +172,49 @@ scene("donjon", () => {
     onKeyRelease("down", () => {
         direction = direction.sub(DOWN)
         check_movement(direction, player)
+    })
+
+    onKeyPress("space", () => {
+        if(swordUsed == false){
+            swordUsed = true
+            if(direction.y == -1){
+                console.log("UP")
+                sword.angle = 0
+                sword.pos.x += 3
+                sword.pos.y -= 0
+                sword.z = 0
+            }
+            else if(direction.y == 1){
+                console.log("DOWN")
+                sword.angle = 180
+                sword.pos.x -= 5
+                sword.pos.y += 17
+                sword.z = 1
+            }
+            else{
+                if(direction.x == 1){
+                    console.log("RIGHT")
+                    sword.angle = 90
+                    sword.pos.x += 10
+                    sword.pos.y += 8  
+                    sword.z = 1
+                }
+                else if(direction.x == -1){
+                    console.log("LEFT")
+                    sword.angle = 270
+                    sword.pos.x -= 10
+                    sword.pos.y += 8  
+                    sword.z = 0
+                }
+            }
+            sword.opacity = 1
+            sword.play("slash")
+            wait(0.3, () => {
+                sword.opacity = 0
+                sword.pos = player.pos
+                swordUsed = false
+            })
+        }
     })
 
 
