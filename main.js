@@ -36,13 +36,15 @@ loadSpriteAtlas("sprites/characters/yasuna1 2.png", {
     }
 })
 loadSpriteAtlas("sprites/tilesets/Dungeon_A2.png", {
-    "test":{
+    "floor":{
         x: 0,
         y: 0,
         height: 64,
         width: 64,
     }
 })
+
+
 loadSprite("ground", "sprites/background/stone_tile.png")
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
     "bat":{
@@ -156,7 +158,7 @@ scene("donjon", () => {
         z(-1)
     ]);
     
-    addLevel([
+    /* addLevel([
         "       5        ",
         "           5    ",
         "           5    ",
@@ -173,8 +175,80 @@ scene("donjon", () => {
                 anchor("center")
             ]
         }
-    })
+    }) */
+
+
+    //Add random level map
     
+    // Define the size of the dungeon
+    const dungeonWidth = 10;
+    const dungeonHeight = 10;
+
+    // Create a new level for the dungeon
+    addLevel([
+      // Define the tilemap for the dungeon
+      // "w" represents walls
+      `${"w".repeat(dungeonWidth + 2)}\n${("w" + "w".repeat(dungeonWidth) + "w\n").repeat(dungeonHeight)}${"w".repeat(dungeonWidth + 2)}`
+    ], {
+      // Define the color and scale of the tiles
+        tileWidth: 32,
+        tileHeight: 32,
+        tiles: {
+            "5": () => [
+                sprite("test"),
+                anchor("center")
+            ]
+        }
+    });
+
+    // Get the tilemap object for the dungeon
+    const dungeonMap = getTilemap("level");
+
+    // Dig out rooms and corridors
+    for (let i = 0; i < 50; i++) {
+      // Choose a random point in the dungeon
+      const x = Math.floor(Math.random() * dungeonWidth);
+      const y = Math.floor(Math.random() * dungeonHeight);
+  
+      // Dig out a room or corridor from that point
+      if (Math.random() < 0.5) {
+        const roomWidth = Math.floor(Math.random() * 5) + 2;
+        const roomHeight = Math.floor(Math.random() * 5) + 2;
+        for (let dy = 0; dy < roomHeight; dy++) {
+          for (let dx = 0; dx < roomWidth; dx++) {
+            const nx = x - Math.floor(roomWidth / 2) + dx;
+            const ny = y - Math.floor(roomHeight / 2) + dy;
+            if (nx >= 1 && nx < dungeonWidth - 1 && ny >= 1 && ny < dungeonHeight - 1) {
+              const tile = dungeonMap.get(nx, ny);
+              if (tile && tile.index === 1) {
+                dungeonMap.set(nx, ny, 0);
+              }
+            }
+          }
+        }
+      } else {
+        const dirX = Math.random() < 0.5 ? -1 : 1;
+        const dirY = Math.random() < 0.5 ? -1 : 1;
+        const corridorLength = Math.floor(Math.random() * 8) + 3;
+        let corridorX = x;
+        let corridorY = y;
+        for (let j = 0; j < corridorLength; j++) {
+          const tile = dungeonMap.get(corridorX, corridorY);
+          if (tile && tile.index === 1) {
+            dungeonMap.set(corridorX, corridorY, 0);
+          }
+          corridorX += dirX;
+          corridorY += dirY;
+        }
+      }
+    }
+
+    //End add random level map
+
+
+
+
+
 
     //add enemy bat
     //let bat_direction = RIGHT
@@ -297,4 +371,55 @@ function taking_damage(monster, player){
     //health
     player.hurt(5)
     console.log(player.hp())
+}
+
+function map_generator(){
+    // Define the size of the dungeon
+    const dungeonWidth = 10;
+    const dungeonHeight = 10;
+
+    // Create a 2D array to represent the dungeon
+    const dungeonMap = new Array(dungeonHeight).fill(null).map(() => new Array(dungeonWidth).fill(null));
+
+    // Fill the dungeon with walls
+    for (let y = 0; y < dungeonHeight; y++) {
+      for (let x = 0; x < dungeonWidth; x++) {
+        dungeonMap[y][x] = "wall";
+      }
+    }
+
+    // Dig out rooms and corridors
+    for (let i = 0; i < 50; i++) {
+     // Choose a random point in the dungeon
+     const x = Math.floor(Math.random() * dungeonWidth);
+      const y = Math.floor(Math.random() * dungeonHeight);
+  
+      // Dig out a room or corridor from that point
+      if (Math.random() < 0.5) {
+        const roomWidth = Math.floor(Math.random() * 5) + 2;
+        const roomHeight = Math.floor(Math.random() * 5) + 2;
+        for (let dy = 0; dy < roomHeight; dy++) {
+          for (let dx = 0; dx < roomWidth; dx++) {
+            const nx = x - Math.floor(roomWidth / 2) + dx;
+            const ny = y - Math.floor(roomHeight / 2) + dy;
+            if (nx >= 1 && nx < dungeonWidth - 1 && ny >= 1 && ny < dungeonHeight - 1) {
+              dungeonMap[ny][nx] = "floor";
+            }
+          }
+        }
+      } else {
+        const dirX = Math.random() < 0.5 ? -1 : 1;
+        const dirY = Math.random() < 0.5 ? -1 : 1;
+        const corridorLength = Math.floor(Math.random() * 8) + 3;
+        let corridorX = x;
+        let corridorY = y;
+        for (let j = 0; j < corridorLength; j++) {
+          if (corridorX >= 1 && corridorX < dungeonWidth - 1 && corridorY >= 1 && corridorY < dungeonHeight - 1) {
+            dungeonMap[corridorY][corridorX] = "floor";
+          }
+          corridorX += dirX;
+          corridorY += dirY;
+        }
+      }
+    }
 }
