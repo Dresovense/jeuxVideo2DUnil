@@ -20,7 +20,10 @@ loadSpriteAtlas("sprites/characters/yasuna1.png", {
             left: {from: 12, to: 14, loop: true},
             down: {from: 0, to: 2, loop: true},
             right: {from: 24, to: 26, loop: true},
-            idle_up: {from: 1, to: 1, loop: true}
+            idle_up: {from: 36, to: 36, loop: true},
+            idle_down: {from: 0, to: 0, loop: true},
+            idle_left: {from: 12, to: 12, loop: true},
+            idle_right: {from: 24, to: 24, loop: true}
         }
     }
 })
@@ -57,11 +60,14 @@ loadSpriteAtlas("sprites/ennemies/Monster.png", {
             left: {from: 12, to: 14, loop: true},
             right: {from: 24, to: 26, loop: true},
             up: {from: 36, to: 38, loop: true},
-            idle_up: {from: 36, to: 36, loop: true}
+            idle_down: {from: 36, to: 36, loop: true},
+            idle_up: {from: 0, to: 0, loop: true},
+            idle_left: {from: 12, to: 12, loop: true},
+            idle_right: {from: 24, to: 24, loop: true}
         }
     }
 })
-loadSpriteAtlas("sprites/objects/swordslash2.png", {
+loadSpriteAtlas("sprites/objects/sword.png", {
     "sword":{
         x: 0,
         y: 0,
@@ -80,6 +86,7 @@ loadSpriteAtlas("sprites/objects/swordslash2.png", {
 scene("donjon", () => {
     const SPEED = 100
     let direction = vec2(0,0)    //changer selon la position de départ
+    let lastKnownDirection = vec2(0,0)
     
     //add player sprite
     let player = add([
@@ -111,7 +118,6 @@ scene("donjon", () => {
         z(1),
         "sword"
     ])
-    //sword.scale.y = -0.5
     let background_position = player.pos
     let swordUsed = false
     camPos(player.pos)
@@ -125,11 +131,11 @@ scene("donjon", () => {
     })
     onKeyPress("right", () => {
         direction = direction.add(RIGHT)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
     onKeyRelease("right", () => {
         direction = direction.sub(RIGHT)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
 
     onKeyDown("left", () => {
@@ -140,11 +146,11 @@ scene("donjon", () => {
     })
     onKeyPress("left", () => {
         direction = direction.add(LEFT)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
     onKeyRelease("left", () => {
         direction = direction.sub(LEFT)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
 
     onKeyDown("up", () => {
@@ -155,11 +161,11 @@ scene("donjon", () => {
     })
     onKeyPress("up", () => {
         direction = direction.add(UP)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
     onKeyRelease("up", () => {
         direction = direction.sub(UP)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
 
     onKeyDown("down", () => {
@@ -170,24 +176,25 @@ scene("donjon", () => {
     })
     onKeyPress("down", () => {
         direction = direction.add(DOWN)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
     onKeyRelease("down", () => {
         direction = direction.sub(DOWN)
-        check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)
     })
 
     onKeyPress("space", () => {
         if(swordUsed == false){
             swordUsed = true
-            if(direction.y == -1){
+            console.log(lastKnownDirection)
+            if(lastKnownDirection.y == -1){
                 console.log("UP")
                 sword.angle = 0
                 sword.pos.x += 3
-                sword.pos.y -= 0
+                sword.pos.y -= 5
                 sword.z = 0
             }
-            else if(direction.y == 1){
+            else if(lastKnownDirection.y == 1){
                 console.log("DOWN")
                 sword.angle = 180
                 sword.pos.x -= 5
@@ -195,14 +202,14 @@ scene("donjon", () => {
                 sword.z = 1
             }
             else{
-                if(direction.x == 1){
+                if(lastKnownDirection.x == 1){
                     console.log("RIGHT")
                     sword.angle = 90
                     sword.pos.x += 10
                     sword.pos.y += 8  
                     sword.z = 1
                 }
-                else if(direction.x == -1){
+                else if(lastKnownDirection.x == -1){
                     console.log("LEFT")
                     sword.angle = 270
                     sword.pos.x -= 10
@@ -214,7 +221,8 @@ scene("donjon", () => {
             sword.play("slash")
             wait(0.3, () => {
                 sword.opacity = 0
-                sword.pos = player.pos
+                sword.pos.x = player.pos.x
+                sword.pos.y = player.pos.y
                 swordUsed = false
             })
         }
@@ -337,21 +345,40 @@ go('donjon')
 function check_movement(direction, player){
     if(direction.y == 1){
         player.play("down")
+        lastKnownDirection = DOWN
     }
     else if(direction.y == -1){
         player.play("up")
+        lastKnownDirection = UP
     }
     else{
         if(direction.x == 1){
             player.play("right")
+            lastKnownDirection = RIGHT
         }
         else if(direction.x == -1){
             player.play("left")
+            lastKnownDirection = LEFT
         }
         else{
-            player.play("idle_up")
+            switch(lastKnownDirection){
+                case UP:
+                    player.play("idle_up");
+                    break;
+                case LEFT:
+                    player.play("idle_left");
+                    break;
+                case RIGHT:
+                    player.play("idle_right");
+                    break;
+                case DOWN:
+                    player.play("idle_down");
+                    break;
+
+            }
         }
     }
+    return lastKnownDirection
 }
 
 function background_following(player, background, background_position){
@@ -378,6 +405,7 @@ function taking_damage(monster, player){
     //movement
     const knockbackDirection = player.pos.sub(monster.pos).unit();
     player.move(knockbackDirection.scale(1500));
+    sword.move(knockbackDirection.scale(1500))
     camPos(player.pos)
 
     //health
