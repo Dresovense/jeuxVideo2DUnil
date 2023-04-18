@@ -105,6 +105,9 @@ scene("donjon", () => {
         opacity(0),
         anchor("center"),
         scale(0.4),
+        area({
+            shape: new Rect(vec2(0), 60, 50),
+        }),
         z(1),
         "sword"
     ])
@@ -250,8 +253,8 @@ scene("donjon", () => {
 
     //add enemy bat
     //let bat_direction = RIGHT
-    let bat_SPEED = 50
-    let bat = add([
+    let bat_SPEED = 40
+    add([
         sprite("bat", {anim: "idle_up"}),
         pos(400,500),
         anchor("center"),
@@ -260,6 +263,7 @@ scene("donjon", () => {
             offset: vec2(0, 12),
         }),
         scale(0.35),
+        health(10),
         z(1),
         "bat",
         "monster",
@@ -268,7 +272,7 @@ scene("donjon", () => {
         }
     ]);
 
-    let bat2 = add([
+    add([
         sprite("bat", {anim: "idle_up"}),
         pos(400,500),
         anchor("center"),
@@ -277,6 +281,7 @@ scene("donjon", () => {
             offset: vec2(0, 12),
         }),
         scale(0.35),
+        health(10),
         z(1),
         "bat",
         "monster",
@@ -284,7 +289,6 @@ scene("donjon", () => {
             bat_direction: RIGHT
         }
     ]);
-
     
     // Set the enemy's behavior to run continuously
     for(let i = 0; i < get("bat").length; i++){
@@ -314,6 +318,16 @@ scene("donjon", () => {
     onCollide("monster", "player", (monster, player) => {
         taking_damage(monster, player)
         background_position = background_following(player, background, background_position)
+    })
+
+    //bat, sword collision
+    onCollide("monster", "sword", (monster, sword) => {
+        if(swordUsed){
+            taking_damage_monster(monster, player)
+            if(monster.hp() <= 0){
+                destroy(monster)
+            }
+        }
     })
     
 })
@@ -370,3 +384,14 @@ function taking_damage(monster, player){
     player.hurt(5)
     console.log(player.hp())
 }
+
+function taking_damage_monster(monster, player){
+    //movement
+    const knockbackDirection = player.pos.sub(monster.pos).unit();
+    monster.move(knockbackDirection.scale(-2500));
+
+    //health
+    monster.hurt(5)
+    console.log(monster.hp())
+}
+
