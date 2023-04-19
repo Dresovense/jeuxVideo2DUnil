@@ -35,14 +35,24 @@ loadSpriteAtlas("sprites/characters/yasuna1 2.png", {
 
     }
 })
-loadSpriteAtlas("sprites/tilesets/Dungeon_A2.png", {
-    "floor":{
-        x: 0,
-        y: 0,
-        height: 64,
-        width: 64,
+loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
+    "wall":{
+        x: 96,
+        y: 624,
+        height: 96,
+        width: 96,
     }
 })
+
+loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
+    "wall_top":{
+        x: 96,
+        y: 528,
+        height: 96,
+        width: 96,
+    }
+})
+
 
 
 loadSprite("ground", "sprites/background/stone_tile.png")
@@ -158,26 +168,36 @@ scene("donjon", () => {
         z(-1)
     ]);
     
-    /* addLevel([
-        "       5        ",
-        "           5    ",
-        "           5    ",
-        "       5    5    ",
-        "       5    5    ",
-        "  5         5    ",
-        "     5      5    ",
+    addLevel([
+        "     4 4 4 4 4  ",
+        "     4 4 4 4 4  ",
+        "     4 4 4 4 4  ",
+        "     4 5 5 5 4   ",
+        "     4       4   ",
+        "     4       4   ",
+        "     5       5   ",
     ],{
-        tileWidth: 32,
-        tileHeight: 32,
+        tileWidth: 24,
+        tileHeight: 24,
         tiles: {
             "5": () => [
-                sprite("test"),
-                anchor("center")
+                sprite("wall"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "4": () => [
+                sprite("wall_top"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
             ]
         }
-    }) */
+    })
 
-
+/* 
     //Add random level map
     
     // Define the size of the dungeon
@@ -199,7 +219,8 @@ scene("donjon", () => {
                 anchor("center")
             ]
         }
-    });
+    },
+    "level");
 
     // Get the tilemap object for the dungeon
     const dungeonMap = getTilemap("level");
@@ -244,7 +265,7 @@ scene("donjon", () => {
     }
 
     //End add random level map
-
+ */
 
 
 
