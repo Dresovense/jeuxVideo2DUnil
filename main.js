@@ -93,7 +93,6 @@ scene("donjon", () => {
         sprite("player", {anim: "idle_up"}),
         pos(500,500),
         anchor("center"),
-        health(50),
         area({
             shape: new Rect(vec2(0), 32, 32),
             offset: vec2(0, 12),
@@ -102,8 +101,12 @@ scene("donjon", () => {
         z(1),
         body(),
         "player",
+        health(50),
         {
-            playerInvincible: false
+            isInvincible: false,
+            att: 10,
+            def: 10,
+            spd: 10,
         }
     ]);
     sword = add([
@@ -121,7 +124,6 @@ scene("donjon", () => {
     let background_position = player.pos
     let swordUsed = false
     camPos(player.pos)
-
     //add controls and animations
     onKeyDown("right", () => {
         player.move(RIGHT.scale(SPEED))
@@ -271,12 +273,16 @@ scene("donjon", () => {
             offset: vec2(0, 12),
         }),
         scale(0.35),
-        health(10),
         z(1),
         "bat",
         "monster",
+        health(10),
         {
-            bat_direction: RIGHT
+            isInvincible: false,
+            bat_direction: RIGHT,
+            att: 10,
+            def: 10,
+            spd: 10,
         }
     ]);
 
@@ -289,12 +295,16 @@ scene("donjon", () => {
             offset: vec2(0, 12),
         }),
         scale(0.35),
-        health(10),
         z(1),
         "bat",
         "monster",
+        health(10),
         {
-            bat_direction: RIGHT
+            isInvincible: false,
+            bat_direction: RIGHT,
+            att: 10,
+            def: 10,
+            spd: 10,
         }
     ]);
     
@@ -329,7 +339,7 @@ scene("donjon", () => {
     })
 
     //bat, sword collision
-    onCollide("monster", "sword", (monster, sword) => {
+    onCollide("monster", "sword", (monster) => {
         if(swordUsed){
             taking_damage_monster(monster, player)
             if(monster.hp() <= 0){
@@ -402,24 +412,67 @@ function background_following(player, background, background_position){
 }
 
 function taking_damage(monster, player){
-    //movement
-    const knockbackDirection = player.pos.sub(monster.pos).unit();
-    player.move(knockbackDirection.scale(1500));
-    sword.move(knockbackDirection.scale(1500))
-    camPos(player.pos)
-
-    //health
-    player.hurt(5)
-    console.log(player.hp())
+    if(player.isInvincible == false){
+        player.isInvincible = true
+        //movement
+        const knockbackDirection = player.pos.sub(monster.pos).unit();
+        player.move(knockbackDirection.scale(1500));
+        sword.move(knockbackDirection.scale(1500))
+        camPos(player.pos)
+    
+        //health
+        damage = monster.att - player.def
+        if(damage <= 0){
+            damage = 1
+        }
+        player.hurt(damage)
+        if(player.hp() > 0){
+            damagePopup(damage, player)
+        }
+        console.log(player.hp())
+        wait(1, () => {
+            player.isInvincible = false
+        })
+    }
 }
 
 function taking_damage_monster(monster, player){
-    //movement
-    const knockbackDirection = player.pos.sub(monster.pos).unit();
-    monster.move(knockbackDirection.scale(-2500));
-
-    //health
-    monster.hurt(5)
-    console.log(monster.hp())
+    if(monster.isInvincible == false){
+        monster.isInvincible = true
+        //movement
+        const knockbackDirection = player.pos.sub(monster.pos).unit();
+        monster.move(knockbackDirection.scale(-2500));
+    
+        //health
+        damage = player.att - monster.def
+        if(damage <= 0){
+            damage = 1
+        }
+        monster.hurt(damage)
+        if(monster.hp() > 0){
+            damagePopup(damage, monster)
+        }
+        console.log(monster.hp())
+        wait(1, () => {
+            monster.isInvincible = false
+        })
+    }
 }
 
+function damagePopup(damage, entity){
+    popup = add([
+        text(damage),
+        pos(entity.pos.x, entity.pos.y - 15),
+        scale(0.25),
+        color(255, 0, 0),
+        anchor('center'),
+        'damage',
+    ])
+    onUpdate(() => {
+        popup.pos.x = entity.pos.x
+        popup.pos.y = entity.pos.y - 15 
+    })
+    wait(0.5, () => {
+        destroy(popup)
+    })
+}
