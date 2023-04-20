@@ -84,7 +84,6 @@ loadSpriteAtlas("sprites/objects/sword.png", {
   
 
 scene("donjon", () => {
-    const SPEED = 100
     let direction = vec2(0,0)    //changer selon la position de départ
     let lastKnownDirection = vec2(0,0)
     
@@ -103,10 +102,9 @@ scene("donjon", () => {
         "player",
         health(50),
         {
-            isInvincible: false,
             att: 10,
             def: 10,
-            spd: 10,
+            speed: 100,
         }
     ]);
     sword = add([
@@ -126,8 +124,8 @@ scene("donjon", () => {
     camPos(player.pos)
     //add controls and animations
     onKeyDown("right", () => {
-        player.move(RIGHT.scale(SPEED))
-        sword.move(RIGHT.scale(SPEED))
+        player.move(RIGHT.scale(player.speed))
+        sword.move(RIGHT.scale(player.speed))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -141,8 +139,8 @@ scene("donjon", () => {
     })
 
     onKeyDown("left", () => {
-        player.move(LEFT.scale(SPEED))
-        sword.move(LEFT.scale(SPEED))
+        player.move(LEFT.scale(player.speed))
+        sword.move(LEFT.scale(player.speed))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -156,8 +154,8 @@ scene("donjon", () => {
     })
 
     onKeyDown("up", () => {
-        player.move(UP.scale(SPEED))
-        sword.move(UP.scale(SPEED))
+        player.move(UP.scale(player.speed))
+        sword.move(UP.scale(player.speed))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -171,8 +169,8 @@ scene("donjon", () => {
     })
 
     onKeyDown("down", () => {
-        player.move(DOWN.scale(SPEED))
-        sword.move(DOWN.scale(SPEED))
+        player.move(DOWN.scale(player.speed))
+        sword.move(DOWN.scale(player.speed))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -263,7 +261,6 @@ scene("donjon", () => {
 
     //add enemy bat
     //let bat_direction = RIGHT
-    let bat_SPEED = 40
     add([
         sprite("bat", {anim: "idle_up"}),
         pos(400,500),
@@ -278,11 +275,10 @@ scene("donjon", () => {
         "monster",
         health(10),
         {
-            isInvincible: false,
             bat_direction: RIGHT,
             att: 10,
             def: 10,
-            spd: 10,
+            speed: 40,
         }
     ]);
 
@@ -300,11 +296,10 @@ scene("donjon", () => {
         "monster",
         health(10),
         {
-            isInvincible: false,
             bat_direction: RIGHT,
             att: 10,
             def: 10,
-            spd: 10,
+            speed: 40,
         }
     ]);
     
@@ -323,10 +318,10 @@ scene("donjon", () => {
     onUpdate("bat", (bat) => {
         let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
         if(distance_player_bat < 100){
-            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat_SPEED + 30)); // Move towards the player
+            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat.speed + 30)); // Move towards the player
         }
         else{
-            let movement = bat.bat_direction.scale(bat_SPEED)
+            let movement = bat.bat_direction.scale(bat.speed)
             bat.move(movement)
         }
     })
@@ -412,51 +407,40 @@ function background_following(player, background, background_position){
 }
 
 function taking_damage(monster, player){
-    if(player.isInvincible == false){
-        player.isInvincible = true
-        //movement
-        const knockbackDirection = player.pos.sub(monster.pos).unit();
-        player.move(knockbackDirection.scale(1500));
-        sword.move(knockbackDirection.scale(1500))
-        camPos(player.pos)
-    
-        //health
-        damage = monster.att - player.def
-        if(damage <= 0){
-            damage = 1
-        }
-        player.hurt(damage)
-        if(player.hp() > 0){
-            damagePopup(damage, player)
-        }
-        console.log(player.hp())
-        wait(1, () => {
-            player.isInvincible = false
-        })
+    //movement
+    const knockbackDirection = player.pos.sub(monster.pos).unit();
+    player.move(knockbackDirection.scale(1500));
+    sword.move(knockbackDirection.scale(1500))
+    camPos(player.pos)
+
+    //health
+    damage = monster.att - player.def
+    if(damage <= 0){
+        damage = 1
     }
+    player.hurt(damage)
+    if(player.hp() > 0){
+        damagePopup(damage, player)
+    }
+    console.log(player.hp())
+    
 }
 
 function taking_damage_monster(monster, player){
-    if(monster.isInvincible == false){
-        monster.isInvincible = true
-        //movement
-        const knockbackDirection = player.pos.sub(monster.pos).unit();
-        monster.move(knockbackDirection.scale(-2500));
-    
-        //health
-        damage = player.att - monster.def
-        if(damage <= 0){
-            damage = 1
-        }
-        monster.hurt(damage)
-        if(monster.hp() > 0){
-            damagePopup(damage, monster)
-        }
-        console.log(monster.hp())
-        wait(1, () => {
-            monster.isInvincible = false
-        })
+    //movement
+    const knockbackDirection = player.pos.sub(monster.pos).unit();
+    monster.move(knockbackDirection.scale(-2500));
+
+    //health
+    damage = player.att - monster.def
+    if(damage <= 0){
+        damage = 1
     }
+    monster.hurt(damage)
+    if(monster.hp() > 0){
+        damagePopup(damage, monster)
+    }
+    console.log(monster.hp())
 }
 
 function damagePopup(damage, entity){
@@ -467,12 +451,10 @@ function damagePopup(damage, entity){
         color(255, 0, 0),
         anchor('center'),
         'damage',
+        lifespan(0.5),
     ])
     onUpdate(() => {
         popup.pos.x = entity.pos.x
         popup.pos.y = entity.pos.y - 15 
-    })
-    wait(0.5, () => {
-        destroy(popup)
     })
 }
