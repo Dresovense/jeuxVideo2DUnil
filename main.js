@@ -105,6 +105,7 @@ scene("donjon", () => {
             att: 10,
             def: 10,
             speed: 100,
+            knockback: 20,
         }
     ]);
     sword = add([
@@ -260,7 +261,6 @@ scene("donjon", () => {
     
 
     //add enemy bat
-    //let bat_direction = RIGHT
     add([
         sprite("bat", {anim: "idle_up"}),
         pos(400,500),
@@ -279,27 +279,7 @@ scene("donjon", () => {
             att: 10,
             def: 10,
             speed: 40,
-        }
-    ]);
-
-    add([
-        sprite("bat", {anim: "idle_up"}),
-        pos(400,500),
-        anchor("center"),
-        area({
-            shape: new Rect(vec2(0), 32, 32),
-            offset: vec2(0, 12),
-        }),
-        scale(0.35),
-        z(1),
-        "bat",
-        "monster",
-        health(10),
-        {
-            bat_direction: RIGHT,
-            att: 10,
-            def: 10,
-            speed: 40,
+            knockback: 20,
         }
     ]);
     
@@ -409,8 +389,8 @@ function background_following(player, background, background_position){
 function taking_damage(monster, player){
     //movement
     const knockbackDirection = player.pos.sub(monster.pos).unit();
-    player.move(knockbackDirection.scale(1500));
-    sword.move(knockbackDirection.scale(1500))
+    player.move(knockbackDirection.scale(monster.knockback * 100));
+    sword.move(knockbackDirection.scale(monster.knockback * 100))
     camPos(player.pos)
 
     //health
@@ -429,7 +409,7 @@ function taking_damage(monster, player){
 function taking_damage_monster(monster, player){
     //movement
     const knockbackDirection = player.pos.sub(monster.pos).unit();
-    monster.move(knockbackDirection.scale(-2500));
+    monster.move(knockbackDirection.scale(-player.knockback * 100));
 
     //health
     damage = player.att - monster.def
