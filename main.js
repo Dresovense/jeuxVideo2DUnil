@@ -102,10 +102,11 @@ scene("donjon", () => {
         "player",
         health(50),
         {
-            att: 10,
+            att: 100,
             def: 10,
             speed: 100,
             knockback: 20,
+            gold: 0
         }
     ]);
     sword = add([
@@ -280,6 +281,10 @@ scene("donjon", () => {
             def: 10,
             speed: 40,
             knockback: 20,
+            drops: {
+                gold: 5,
+                boost: 0.2 //chances
+            }
         }
     ]);
     
@@ -307,20 +312,28 @@ scene("donjon", () => {
     })
 
 
-    //bat, player collision
+    //monster, player collision
     onCollide("monster", "player", (monster, player) => {
         taking_damage(monster, player)
         background_position = background_following(player, background, background_position)
     })
 
-    //bat, sword collision
+    //monster, sword collision
     onCollide("monster", "sword", (monster) => {
         if(swordUsed){
             taking_damage_monster(monster, player)
             if(monster.hp() <= 0){
+                drops(monster)
                 destroy(monster)
             }
         }
+    })
+
+    //gold, player collision
+    onCollide("gold", "player", (gold, player) => {
+        player.gold += gold.gold
+        console.log(player.gold)
+        destroy(gold)
     })
     
 })
@@ -437,4 +450,80 @@ function damagePopup(damage, entity){
         popup.pos.x = entity.pos.x
         popup.pos.y = entity.pos.y - 15 
     })
+}
+
+function drops(monster){
+    let gold_drop = monster.drops.gold
+    while(gold_drop > 0){
+        if(gold_drop >= 100){
+            add([
+                circle(16),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 100
+                },
+            ]);
+            gold_drop -= 100
+        }
+        else if(gold_drop >= 50){
+            add([
+                circle(8),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 50
+                },
+            ]);
+            gold_drop -= 50
+        }
+        else if(gold_drop >= 20){
+            add([
+                circle(4),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 20
+                },
+            ]);
+            gold_drop -= 20
+        }
+        else if(gold_drop >= 5){
+            add([
+                circle(2),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 5
+                },
+            ]);
+            gold_drop -= 5
+        }
+        else if(gold_drop >= 1){
+            add([
+                circle(1),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 1
+                },
+            ]);
+            gold_drop -= 1
+        }
+    }
 }
