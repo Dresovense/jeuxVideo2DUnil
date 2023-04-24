@@ -5,6 +5,9 @@ kaboom({
     debug: true,
 });
 
+//Import maps
+//import { maps } from "./maps";
+
 //load sprites
 loadRoot("assets/")
 loadSpriteAtlas("sprites/characters/yasuna1.png", {
@@ -169,26 +172,69 @@ scene("donjon", () => {
     ]);
     
     addLevel([
-        "444444444444444444444",
-        "444444444444444444444",
-        "444444444444444444444",
-        "444444444444444444444",
-        "444444444555444444444",
-        "444444444   444444444",
-        "444444444   444444444",
-        "555555555   555555555",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXYYYYYYYYYXXYYYYYYYYYYYYYYXXYYYYYYYYXXYYYYYYXXXXXXXXX",
+        "XXXXXXXXX         XX              XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX      XX      XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX      XX      XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX      XX      XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX      XY      XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX      X       XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XXXXXXXXX XXXXXXXXXXX XXXXXXX XXXXXXXXXXXXX",
+        "XXXXXXXXX         XXYYYYYYX YYYYYYYYYYY YYYXXYY YYYXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXX XXX      X                 XX      XXXXXXXXX",
+        "XXXXXXXXXYYYYYYY YXX      XX      XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX      XX      XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX      YY      XX        YY      XXXXXXXXX",
+        "XXXXXXXXX         XX              XX                XXXXXXXXX",
+        "XXXXXXXXX         XX      XX      XX        XX      XXXXXXXXX",
+        "XXXXXXXXX         XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXX         XXXXXXXXXXXYY YYYYXXYYYYYYXXYYYYYYXXXXXXXXX",
+        "XXXXXXXXXXXX XXXXXXX       XX       XX      XX      XXXXXXXXX",
+        "XXXXXXXXXYYY YYYYYXX       XX       XX      XX      XXXXXXXXX",
+        "XXXXXXXXX         XX       YY       YY      XX      XXXXXXXXX",
+        "XXXXXXXXX         XX                        XX      XXXXXXXXX",
+        "XXXXXXXXX         XX       XX       XX      XX      XXXXXXXXX",
+        "XXXXXXXXX         XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXX",
+        "XXXXXXXXX         XXYYYYYYYYXXYY YYYXXYYYYYYXXY YYYYXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX XX        XX      XX      XX      XXXXXXXXX",
+        "XXXXXXXXXYYYYYYYY XX        XX      XX      YY      XXXXXXXXX",
+        "XXXXXXXXX         XX        XX      YY              XXXXXXXXX",
+        "XXXXXXXXX         XX        YY              XX      XXXXXXXXX",
+        "XXXXXXXXX         XX                XX      XX      XXXXXXXXX",
+        "XXXXXXXXX         XXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXX         YYY YYYYYYYYYYYYYYYXXYYYYYXXYYYYYYXXXXXXXXX",
+        "XXXXXXXXX                            YY     XX      XXXXXXXXX",
+        "XXXXXXXXX         XX          XX            XX      XXXXXXXXX",
+        "XXXXXXXXX         XX          XX     XX     XX      XXXXXXXXX",
+        "XXXXXXXXXXX XXXXXXXX          XX     XX     XX      XXXXXXXXX",
+        "XXXXXXXXXYY YYYYYYXX          XX     XX     XX      XXXXXXXXX",
+        "XXXXXXXXX         XX          XX     XX     XX      XXXXXXXXX",
+        "XXXXXXXXX         XXXXXXXXXXXXXXXXXXXXX XXXXXX XXXXXXXXXXXXXX",
+        "XXXXXXXXX         XXYYYYYYYYYYXXYYYYYXX YYYYXX YYYYYXXXXXXXXX",
+        "XXXXXXXXX         XX          XX     XX     XX      XXXXXXXXX",
+        "XXXXXXXXX         XX          XX     XX     XX      XXXXXXXXX",
+        "XXXXXXXXX         XX          XX     XX     XX      XXXXXXXXX",
+        "XXXXXXXXX         XX          YY     YY     YY      XXXXXXXXX",
+        "XXXXXXXXX         XX                                XXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     ],{
         tileWidth: 24,
         tileHeight: 24,
         tiles: {
-            "5": () => [
+            "Y": () => [
                 sprite("wall"),
                 anchor("center"),
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
             ],
-            "4": () => [
+            "X": () => [
                 sprite("wall_top"),
                 anchor("center"),
                 scale(0.25),
