@@ -55,7 +55,7 @@ loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
 
 
 
-loadSprite("ground", "sprites/background/stone_tile.png")
+loadSprite("ground", "sprites/background/crystal_tile.png")
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
     "bat":{
         x: 0,
@@ -169,13 +169,14 @@ scene("donjon", () => {
     ]);
     
     addLevel([
-        "     4 4 4 4 4  ",
-        "     4 4 4 4 4  ",
-        "     4 4 4 4 4  ",
-        "     4 5 5 5 4   ",
-        "     4       4   ",
-        "     4       4   ",
-        "     5       5   ",
+        "44444444444444444444",
+        "44444444444444444444",
+        "44444444444444444444",
+        "44444444444444444444",
+        "44444444555444444444",
+        "44444444   444444444",
+        "44444444   444444444",
+        "55555555   555555555",
     ],{
         tileWidth: 24,
         tileHeight: 24,
@@ -183,14 +184,14 @@ scene("donjon", () => {
             "5": () => [
                 sprite("wall"),
                 anchor("center"),
-                scale(0.5),
+                scale(0.25),
                 area(),
                 body({isStatic:true}),
             ],
             "4": () => [
                 sprite("wall_top"),
                 anchor("center"),
-                scale(0.5),
+                scale(0.25),
                 area(),
                 body({isStatic:true}),
             ]
