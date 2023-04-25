@@ -191,7 +191,7 @@ scene("donjon", () => {
         "XXXXXXXXX         XX              XX                XXXXXXXXX",
         "XXXXXXXXX         XX      XX      XX        XX      XXXXXXXXX",
         "XXXXXXXXX         XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        "XXXXXXXXX         XXXXXXXXXXXYY YYYYXXYYYYYYXXYYYYYYXXXXXXXXX",
+        "XXXXXXXXX         XXYYYYYYYXXYY YYYYXXYYYYYYXXYYYYYYXXXXXXXXX",
         "XXXXXXXXXXXX XXXXXXX       XX       XX      XX      XXXXXXXXX",
         "XXXXXXXXXYYY YYYYYXX       XX       XX      XX      XXXXXXXXX",
         "XXXXXXXXX         XX       YY       YY      XX      XXXXXXXXX",
