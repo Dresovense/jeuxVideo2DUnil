@@ -173,7 +173,7 @@ scene("donjon", () => {
         z(-1)
     ]);
     
-    addLevel(export_maps(0),{
+    addLevel(export_maps(Math.floor(Math.random(maps.length-1)*maps.length)),{
         tileWidth: 24,
         tileHeight: 24,
         tiles: {
