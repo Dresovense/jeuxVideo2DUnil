@@ -84,7 +84,6 @@ loadSpriteAtlas("sprites/objects/sword.png", {
   
 
 scene("donjon", () => {
-    const SPEED = 100
     let direction = vec2(0,0)    //changer selon la position de départ
     let lastKnownDirection = vec2(0,0)
     
@@ -93,7 +92,6 @@ scene("donjon", () => {
         sprite("player", {anim: "idle_up"}),
         pos(500,500),
         anchor("center"),
-        health(50),
         area({
             shape: new Rect(vec2(0), 32, 32),
             offset: vec2(0, 12),
@@ -102,8 +100,16 @@ scene("donjon", () => {
         z(1),
         body(),
         "player",
+        health(50),
         {
-            playerInvincible: false
+            att: 100,
+            def: 10,
+            speed: 100,
+            knockback: 20,
+            gold: 0,
+            att_temp: 0,
+            def_temp: 0,
+            speed_temp: 0
         }
     ]);
     sword = add([
@@ -121,11 +127,10 @@ scene("donjon", () => {
     let background_position = player.pos
     let swordUsed = false
     camPos(player.pos)
-
     //add controls and animations
     onKeyDown("right", () => {
-        player.move(RIGHT.scale(SPEED))
-        sword.move(RIGHT.scale(SPEED))
+        player.move(RIGHT.scale(player.speed + player.speed_temp))
+        sword.move(RIGHT.scale(player.speed + player.speed_temp))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -139,8 +144,8 @@ scene("donjon", () => {
     })
 
     onKeyDown("left", () => {
-        player.move(LEFT.scale(SPEED))
-        sword.move(LEFT.scale(SPEED))
+        player.move(LEFT.scale(player.speed + player.speed_temp))
+        sword.move(LEFT.scale(player.speed + player.speed_temp))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -154,8 +159,8 @@ scene("donjon", () => {
     })
 
     onKeyDown("up", () => {
-        player.move(UP.scale(SPEED))
-        sword.move(UP.scale(SPEED))
+        player.move(UP.scale(player.speed + player.speed_temp))
+        sword.move(UP.scale(player.speed + player.speed_temp))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -169,8 +174,8 @@ scene("donjon", () => {
     })
 
     onKeyDown("down", () => {
-        player.move(DOWN.scale(SPEED))
-        sword.move(DOWN.scale(SPEED))
+        player.move(DOWN.scale(player.speed + player.speed_temp))
+        sword.move(DOWN.scale(player.speed + player.speed_temp))
         camPos(player.pos)
         background_position = background_following(player, background, background_position)
     })
@@ -260,8 +265,6 @@ scene("donjon", () => {
     
 
     //add enemy bat
-    //let bat_direction = RIGHT
-    let bat_SPEED = 40
     add([
         sprite("bat", {anim: "idle_up"}),
         pos(400,500),
@@ -271,30 +274,20 @@ scene("donjon", () => {
             offset: vec2(0, 12),
         }),
         scale(0.35),
-        health(10),
         z(1),
         "bat",
         "monster",
-        {
-            bat_direction: RIGHT
-        }
-    ]);
-
-    add([
-        sprite("bat", {anim: "idle_up"}),
-        pos(400,500),
-        anchor("center"),
-        area({
-            shape: new Rect(vec2(0), 32, 32),
-            offset: vec2(0, 12),
-        }),
-        scale(0.35),
         health(10),
-        z(1),
-        "bat",
-        "monster",
         {
-            bat_direction: RIGHT
+            bat_direction: RIGHT,
+            att: 10,
+            def: 10,
+            speed: 40,
+            knockback: 20,
+            drops: {
+                gold: 5,
+                boost: 0.2 //chances
+            }
         }
     ]);
     
@@ -313,30 +306,66 @@ scene("donjon", () => {
     onUpdate("bat", (bat) => {
         let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
         if(distance_player_bat < 100){
-            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat_SPEED + 30)); // Move towards the player
+            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat.speed + 30)); // Move towards the player
         }
         else{
-            let movement = bat.bat_direction.scale(bat_SPEED)
+            let movement = bat.bat_direction.scale(bat.speed)
             bat.move(movement)
         }
     })
 
 
-    //bat, player collision
+    //monster, player collision
     onCollide("monster", "player", (monster, player) => {
         taking_damage(monster, player)
         background_position = background_following(player, background, background_position)
     })
 
-    //bat, sword collision
-    onCollide("monster", "sword", (monster, sword) => {
+    //monster, sword collision
+    onCollide("monster", "sword", (monster) => {
         if(swordUsed){
             taking_damage_monster(monster, player)
             if(monster.hp() <= 0){
+                drops(monster)
                 destroy(monster)
             }
         }
     })
+
+    //gold, player collision
+    onCollide("gold", "player", (gold, player) => {
+        player.gold += gold.gold
+        destroy(gold)
+    })
+
+    //gold, player collision
+    onCollide("boost", "player", (boost, player) => {
+        switch(boost.boost){
+            case "att":
+                player.att_temp += boost.att
+                wait(4, () => {
+                    player.att_temp = 0
+                    console.log(player.att_temp)
+                })
+                break;
+            case "def":
+                player.def_temp += boost.def
+                wait(4, () => {
+                    player.def_temp = 0
+                    console.log(player.def_temp)
+                })
+                break;
+            case "speed":
+                player.speed_temp += boost.speed
+                wait(4, () => {
+                    player.speed_temp = 0
+                    console.log(player.speed_temp)
+                })
+                break;
+        }
+        destroy(boost)
+    })
+
     
 })
 
@@ -404,22 +433,178 @@ function background_following(player, background, background_position){
 function taking_damage(monster, player){
     //movement
     const knockbackDirection = player.pos.sub(monster.pos).unit();
-    player.move(knockbackDirection.scale(1500));
-    sword.move(knockbackDirection.scale(1500))
+    player.move(knockbackDirection.scale(monster.knockback * 100));
+    sword.move(knockbackDirection.scale(monster.knockback * 100))
     camPos(player.pos)
 
     //health
-    player.hurt(5)
+    damage = monster.att - player.def - player.def_temp
+    if(damage <= 0){
+        damage = 1
+    }
+    player.hurt(damage)
+    if(player.hp() > 0){
+        damagePopup(damage, player)
+    }
     console.log(player.hp())
+    
 }
 
 function taking_damage_monster(monster, player){
     //movement
     const knockbackDirection = player.pos.sub(monster.pos).unit();
-    monster.move(knockbackDirection.scale(-2500));
+    monster.move(knockbackDirection.scale(-player.knockback * 100));
 
     //health
-    monster.hurt(5)
+    damage = player.att + player.att_temp - monster.def
+    if(damage <= 0){
+        damage = 1
+    }
+    monster.hurt(damage)
+    if(monster.hp() > 0){
+        damagePopup(damage, monster)
+    }
     console.log(monster.hp())
 }
 
+function damagePopup(damage, entity){
+    popup = add([
+        text(damage),
+        pos(entity.pos.x, entity.pos.y - 15),
+        scale(0.25),
+        color(255, 0, 0),
+        anchor('center'),
+        'damage',
+        lifespan(0.5),
+    ])
+    onUpdate(() => {
+        popup.pos.x = entity.pos.x
+        popup.pos.y = entity.pos.y - 15 
+    })
+}
+
+function drops(monster){
+    let gold_drop = monster.drops.gold
+    while(gold_drop > 0){
+        if(gold_drop >= 100){
+            add([
+                circle(16),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 100
+                },
+            ]);
+            gold_drop -= 100
+        }
+        else if(gold_drop >= 50){
+            add([
+                circle(8),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 50
+                },
+            ]);
+            gold_drop -= 50
+        }
+        else if(gold_drop >= 20){
+            add([
+                circle(4),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 20
+                },
+            ]);
+            gold_drop -= 20
+        }
+        else if(gold_drop >= 5){
+            add([
+                circle(2),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 5
+                },
+            ]);
+            gold_drop -= 5
+        }
+        else if(gold_drop >= 1){
+            add([
+                circle(1),
+                color(255, 250, 63),
+                pos(monster.pos),
+                lifespan(10),
+                area(),
+                "gold",
+                {
+                    gold: 1
+                },
+            ]);
+            gold_drop -= 1
+        }
+    }
+
+    let random = rand()
+    console.log(random)
+    if(random <= monster.drops.boost){
+        let randPos = vec2(rand(20), rand(20))
+        switch(randi(3)){
+            case 0:
+                add([
+                    circle(2),
+                    color(RED),
+                    pos(monster.pos.x + randPos.x, monster.pos.y + randPos.y),
+                    lifespan(10),
+                    area(),
+                    "boost",
+                    {
+                        att: 2,
+                        boost: "att"
+                    },
+                ]);
+                break;
+            case 1:
+                add([
+                    circle(2),
+                    color(BLUE),
+                    pos(monster.pos.x + randPos.x, monster.pos.y + randPos.y),
+                    lifespan(10),
+                    area(),
+                    "boost",
+                    {
+                        def: 2,
+                        boost: "def"
+                    },
+                ]);
+                break;
+            case 2:
+                add([
+                    circle(2),
+                    color(GREEN),
+                    pos(monster.pos.x + randPos.x, monster.pos.y + randPos.y),
+                    lifespan(10),
+                    area(),
+                    "boost",
+                    {
+                        speed: 2,
+                        boost: "speed"
+                    },
+                ]);
+                break;
+        }
+    }
+}
