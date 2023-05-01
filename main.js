@@ -102,14 +102,15 @@ scene("donjon", () => {
         "player",
         health(50),
         {
-            att: 100,
+            att: 15,
             def: 10,
             speed: 100,
             knockback: 20,
             gold: 0,
             att_temp: 0,
             def_temp: 0,
-            speed_temp: 0
+            speed_temp: 0,
+            max_health: 50
         }
     ]);
     sword = add([
@@ -366,6 +367,9 @@ scene("donjon", () => {
         destroy(boost)
     })
 
+
+    //add UI
+    addUI(player);
     
 })
 
@@ -607,4 +611,47 @@ function drops(monster){
                 break;
         }
     }
+}
+
+function addUI(player){
+    //hp
+    const healthBar = add([
+        rect(100, 10),
+        pos(10, 10),
+        color(15, 139, 6),
+        "ui",
+        fixed()
+    ]);
+    console.log(healthBar)
+    onUpdate(() => {
+        // Update health bar
+        const maxHp = player.max_health;
+        const currentHp = player.hp();
+
+        healthBar.width = (currentHp / maxHp) * 100;
+    })
+
+    //gold
+    const gold_logo = add([
+        circle(5),
+        pos(width() - 30, 15),
+        color(255, 255, 0),
+        fixed(),
+        "ui"
+    ])
+
+    const gold =  add([
+        text(player.gold, {size: 20}),
+        pos(width() - 20, 5),
+        color(255, 255, 0),
+        "ui",
+        fixed()
+    ]);
+    onUpdate(() => {
+        // Update health bar
+        gold.text = player.gold
+    })
+
+    //boosts
+
 }
