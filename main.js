@@ -190,6 +190,12 @@ scene("donjon", () => {
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
+            ],
+            "Z": () => [
+                sprite("wall_top"),
+                anchor("center"),
+                scale(0.25),
+                area(),
             ]
         }
     })
