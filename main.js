@@ -84,289 +84,210 @@ loadSpriteAtlas("sprites/objects/sword.png", {
   
 
 scene("donjon", () => {
-    let direction = vec2(0,0)    //changer selon la position de départ
-    let lastKnownDirection = vec2(0,0)
-    
-    //add player sprite
-    let player = add([
-        sprite("player", {anim: "idle_up"}),
-        pos(500,500),
-        anchor("center"),
-        area({
-            shape: new Rect(vec2(0), 32, 32),
-            offset: vec2(0, 12),
-        }),
-        scale(0.5),
-        z(1),
-        body(),
-        "player",
-        health(50),
-        {
-            att: 100,
-            def: 10,
-            speed: 100,
-            knockback: 20,
-            gold: 0,
-            att_temp: 0,
-            def_temp: 0,
-            speed_temp: 0
-        }
-    ]);
-    sword = add([
-        sprite("sword", {anim: "idle"}),
-        pos(player.pos.x, player.pos.y),
-        opacity(0),
-        anchor("center"),
-        scale(0.4),
-        area({
-            shape: new Rect(vec2(0), 60, 50),
-        }),
-        z(1),
-        "sword"
-    ])
-    let background_position = player.pos
-    let swordUsed = false
-    camPos(player.pos)
-    //add controls and animations
-    onKeyDown("right", () => {
-        player.move(RIGHT.scale(player.speed + player.speed_temp))
-        sword.move(RIGHT.scale(player.speed + player.speed_temp))
-        camPos(player.pos)
-        background_position = background_following(player, background, background_position)
-    })
-    onKeyPress("right", () => {
-        direction = direction.add(RIGHT)
-        lastKnownDirection = check_movement(direction, player)
-    })
-    onKeyRelease("right", () => {
-        direction = direction.sub(RIGHT)
-        lastKnownDirection = check_movement(direction, player)
-    })
-
-    onKeyDown("left", () => {
-        player.move(LEFT.scale(player.speed + player.speed_temp))
-        sword.move(LEFT.scale(player.speed + player.speed_temp))
-        camPos(player.pos)
-        background_position = background_following(player, background, background_position)
-    })
-    onKeyPress("left", () => {
-        direction = direction.add(LEFT)
-        lastKnownDirection = check_movement(direction, player)
-    })
-    onKeyRelease("left", () => {
-        direction = direction.sub(LEFT)
-        lastKnownDirection = check_movement(direction, player)
-    })
-
-    onKeyDown("up", () => {
-        player.move(UP.scale(player.speed + player.speed_temp))
-        sword.move(UP.scale(player.speed + player.speed_temp))
-        camPos(player.pos)
-        background_position = background_following(player, background, background_position)
-    })
-    onKeyPress("up", () => {
-        direction = direction.add(UP)
-        lastKnownDirection = check_movement(direction, player)
-    })
-    onKeyRelease("up", () => {
-        direction = direction.sub(UP)
-        lastKnownDirection = check_movement(direction, player)
-    })
-
-    onKeyDown("down", () => {
-        player.move(DOWN.scale(player.speed + player.speed_temp))
-        sword.move(DOWN.scale(player.speed + player.speed_temp))
-        camPos(player.pos)
-        background_position = background_following(player, background, background_position)
-    })
-    onKeyPress("down", () => {
-        direction = direction.add(DOWN)
-        lastKnownDirection = check_movement(direction, player)
-    })
-    onKeyRelease("down", () => {
-        direction = direction.sub(DOWN)
-        lastKnownDirection = check_movement(direction, player)
-    })
-
-    onKeyPress("space", () => {
-        if(swordUsed == false){
-            swordUsed = true
-            console.log(lastKnownDirection)
-            if(lastKnownDirection.y == -1){
-                console.log("UP")
-                sword.angle = 0
-                sword.pos.x += 3
-                sword.pos.y -= 5
-                sword.z = 0
+    //Create player, movement, and level
+        let direction = vec2(0,0)    //changer selon la position de départ
+        let lastKnownDirection = vec2(0,0)
+        
+        //add player sprite
+        let player = add([
+            sprite("player", {anim: "idle_up"}),
+            pos(500,500),
+            anchor("center"),
+            area({
+                shape: new Rect(vec2(0), 32, 32),
+                offset: vec2(0, 12),
+            }),
+            scale(0.5),
+            z(1),
+            body(),
+            "player",
+            health(50),
+            {
+                att: 15,
+                def: 10,
+                speed: 100,
+                knockback: 20,
+                gold: 0,
+                max_health: 50
             }
-            else if(lastKnownDirection.y == 1){
-                console.log("DOWN")
-                sword.angle = 180
-                sword.pos.x -= 5
-                sword.pos.y += 17
-                sword.z = 1
-            }
-            else{
-                if(lastKnownDirection.x == 1){
-                    console.log("RIGHT")
-                    sword.angle = 90
-                    sword.pos.x += 10
-                    sword.pos.y += 8  
-                    sword.z = 1
-                }
-                else if(lastKnownDirection.x == -1){
-                    console.log("LEFT")
-                    sword.angle = 270
-                    sword.pos.x -= 10
-                    sword.pos.y += 8  
+        ]);
+        sword = add([
+            sprite("sword", {anim: "idle"}),
+            pos(player.pos.x, player.pos.y),
+            opacity(0),
+            anchor("center"),
+            scale(0.4),
+            area({
+                shape: new Rect(vec2(0), 60, 50),
+            }),
+            z(1),
+            "sword"
+        ])
+        let background_position = player.pos
+        let swordUsed = false
+        camPos(player.pos)
+        //add controls and animations
+        onKeyDown("right", () => {
+            player.move(RIGHT.scale(player.speed))
+            sword.move(RIGHT.scale(player.speed))
+            camPos(player.pos)
+            background_position = background_following(player, background, background_position)
+        })
+        onKeyPress("right", () => {
+            direction = direction.add(RIGHT)
+            lastKnownDirection = check_movement(direction, player)
+        })
+        onKeyRelease("right", () => {
+            direction = direction.sub(RIGHT)
+            lastKnownDirection = check_movement(direction, player)
+        })
+
+        onKeyDown("left", () => {
+            player.move(LEFT.scale(player.speed))
+            sword.move(LEFT.scale(player.speed))
+            camPos(player.pos)
+            background_position = background_following(player, background, background_position)
+        })
+        onKeyPress("left", () => {
+            direction = direction.add(LEFT)
+            lastKnownDirection = check_movement(direction, player)
+        })
+        onKeyRelease("left", () => {
+            direction = direction.sub(LEFT)
+            lastKnownDirection = check_movement(direction, player)
+        })
+
+        onKeyDown("up", () => {
+            player.move(UP.scale(player.speed))
+            sword.move(UP.scale(player.speed))
+            camPos(player.pos)
+            background_position = background_following(player, background, background_position)
+        })
+        onKeyPress("up", () => {
+            direction = direction.add(UP)
+            lastKnownDirection = check_movement(direction, player)
+        })
+        onKeyRelease("up", () => {
+            direction = direction.sub(UP)
+            lastKnownDirection = check_movement(direction, player)
+        })
+
+        onKeyDown("down", () => {
+            player.move(DOWN.scale(player.speed))
+            sword.move(DOWN.scale(player.speed))
+            camPos(player.pos)
+            background_position = background_following(player, background, background_position)
+        })
+        onKeyPress("down", () => {
+            direction = direction.add(DOWN)
+            lastKnownDirection = check_movement(direction, player)
+        })
+        onKeyRelease("down", () => {
+            direction = direction.sub(DOWN)
+            lastKnownDirection = check_movement(direction, player)
+        })
+
+        onKeyPress("space", () => {
+            if(swordUsed == false){
+                swordUsed = true
+                console.log(lastKnownDirection)
+                if(lastKnownDirection.y == -1){
+                    console.log("UP")
+                    sword.angle = 0
+                    sword.pos.x += 3
+                    sword.pos.y -= 5
                     sword.z = 0
                 }
-            }
-            sword.opacity = 1
-            sword.play("slash")
-            wait(0.3, () => {
-                sword.opacity = 0
-                sword.pos.x = player.pos.x
-                sword.pos.y = player.pos.y
-                swordUsed = false
-            })
-        }
-    })
-
-
-
-    //background moves with the player
-    let background = add([
-        sprite("ground", {width: width(), height: height()}),
-        pos(player.pos),
-        anchor("center"),
-        scale(1.5),
-        z(-1)
-    ]);
-    
-    addLevel([
-        "       5        ",
-        "           5    ",
-        "           5    ",
-        "       5    5    ",
-        "       5    5    ",
-        "  5         5    ",
-        "     5      5    ",
-    ],{
-        tileWidth: 32,
-        tileHeight: 32,
-        tiles: {
-            "5": () => [
-                sprite("test"),
-                anchor("center")
-            ]
-        }
-    })
-    
-
-    //add enemy bat
-    add([
-        sprite("bat", {anim: "idle_up"}),
-        pos(400,500),
-        anchor("center"),
-        area({
-            shape: new Rect(vec2(0), 32, 32),
-            offset: vec2(0, 12),
-        }),
-        scale(0.35),
-        z(1),
-        "bat",
-        "monster",
-        health(10),
-        {
-            bat_direction: RIGHT,
-            att: 10,
-            def: 10,
-            speed: 40,
-            knockback: 20,
-            drops: {
-                gold: 5,
-                boost: 0.2 //chances
-            }
-        }
-    ]);
-    
-    // Set the enemy's behavior to run continuously
-    for(let i = 0; i < get("bat").length; i++){
-        bat = get("bat")[i]
-        loop(randi(1,3), () => {
-            let directions = [RIGHT, LEFT, UP, DOWN]
-            bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
-            if(bat.bat_direction.x == 0 && bat.bat_direction.y == 0){
-                let directions = [RIGHT, LEFT, UP, DOWN]
-                bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
+                else if(lastKnownDirection.y == 1){
+                    console.log("DOWN")
+                    sword.angle = 180
+                    sword.pos.x -= 5
+                    sword.pos.y += 17
+                    sword.z = 1
+                }
+                else{
+                    if(lastKnownDirection.x == 1){
+                        console.log("RIGHT")
+                        sword.angle = 90
+                        sword.pos.x += 10
+                        sword.pos.y += 8  
+                        sword.z = 1
+                    }
+                    else if(lastKnownDirection.x == -1){
+                        console.log("LEFT")
+                        sword.angle = 270
+                        sword.pos.x -= 10
+                        sword.pos.y += 8  
+                        sword.z = 0
+                    }
+                }
+                sword.opacity = 1
+                sword.play("slash")
+                wait(0.3, () => {
+                    sword.opacity = 0
+                    sword.pos.x = player.pos.x
+                    sword.pos.y = player.pos.y
+                    swordUsed = false
+                })
             }
         })
-    }
-    onUpdate("bat", (bat) => {
-        let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
-        if(distance_player_bat < 100){
-            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat.speed + 30)); // Move towards the player
-        }
-        else{
-            let movement = bat.bat_direction.scale(bat.speed)
-            bat.move(movement)
-        }
-    })
 
-
-    //monster, player collision
-    onCollide("monster", "player", (monster, player) => {
-        taking_damage(monster, player)
-        background_position = background_following(player, background, background_position)
-    })
-
-    //monster, sword collision
-    onCollide("monster", "sword", (monster) => {
-        if(swordUsed){
-            taking_damage_monster(monster, player)
-            if(monster.hp() <= 0){
-                drops(monster)
-                destroy(monster)
+        //background moves with the player
+        let background = add([
+            sprite("ground", {width: width(), height: height()}),
+            pos(player.pos),
+            anchor("center"),
+            scale(1.5),
+            z(-1)
+        ]);
+        
+        addLevel([
+            "       5        ",
+            "           5    ",
+            "           5    ",
+            "       5    5    ",
+            "       5    5    ",
+            "  5         5    ",
+            "     5      5    ",
+        ],{
+            tileWidth: 32,
+            tileHeight: 32,
+            tiles: {
+                "5": () => [
+                    sprite("test"),
+                    anchor("center")
+                ]
             }
-        }
-    })
-
-    //gold, player collision
-    onCollide("gold", "player", (gold, player) => {
-        player.gold += gold.gold
-        destroy(gold)
-    })
-
-    //gold, player collision
-    onCollide("boost", "player", (boost, player) => {
-        switch(boost.boost){
-            case "att":
-                player.att_temp += boost.att
-                wait(4, () => {
-                    player.att_temp = 0
-                    console.log(player.att_temp)
-                })
-                break;
-            case "def":
-                player.def_temp += boost.def
-                wait(4, () => {
-                    player.def_temp = 0
-                    console.log(player.def_temp)
-                })
-                break;
-            case "speed":
-                player.speed_temp += boost.speed
-                wait(4, () => {
-                    player.speed_temp = 0
-                    console.log(player.speed_temp)
-                })
-                break;
-        }
-        destroy(boost)
-    })
-
+        })
     
+
+    // add enemies    
+        addBat((400,500));
+        enemyBehavior(player, sword); 
+
+        
+    //collisions (monster and items)
+        onCollide("monster", "player", (monster, player) => {
+            taking_damage(monster, player)
+            background_position = background_following(player, background, background_position)
+        })
+
+        //monster, sword collision
+        onCollide("monster", "sword", (monster) => {
+            if(swordUsed){
+                taking_damage_monster(monster, player)
+                if(monster.hp() <= 0){
+                    drops(monster)
+                    destroy(monster)
+                }
+            }
+        })
+
+        goldCollision()
+
+
+    //add UI
+        addUI(player);  
 })
 
 go('donjon')
@@ -438,7 +359,7 @@ function taking_damage(monster, player){
     camPos(player.pos)
 
     //health
-    damage = monster.att - player.def - player.def_temp
+    damage = monster.att - player.def
     if(damage <= 0){
         damage = 1
     }
@@ -456,7 +377,7 @@ function taking_damage_monster(monster, player){
     monster.move(knockbackDirection.scale(-player.knockback * 100));
 
     //health
-    damage = player.att + player.att_temp - monster.def
+    damage = player.att - monster.def
     if(damage <= 0){
         damage = 1
     }
@@ -557,54 +478,120 @@ function drops(monster){
             gold_drop -= 1
         }
     }
+}
 
-    let random = rand()
-    console.log(random)
-    if(random <= monster.drops.boost){
-        let randPos = vec2(rand(20), rand(20))
-        switch(randi(3)){
-            case 0:
-                add([
-                    circle(2),
-                    color(RED),
-                    pos(monster.pos.x + randPos.x, monster.pos.y + randPos.y),
-                    lifespan(10),
-                    area(),
-                    "boost",
-                    {
-                        att: 2,
-                        boost: "att"
-                    },
-                ]);
-                break;
-            case 1:
-                add([
-                    circle(2),
-                    color(BLUE),
-                    pos(monster.pos.x + randPos.x, monster.pos.y + randPos.y),
-                    lifespan(10),
-                    area(),
-                    "boost",
-                    {
-                        def: 2,
-                        boost: "def"
-                    },
-                ]);
-                break;
-            case 2:
-                add([
-                    circle(2),
-                    color(GREEN),
-                    pos(monster.pos.x + randPos.x, monster.pos.y + randPos.y),
-                    lifespan(10),
-                    area(),
-                    "boost",
-                    {
-                        speed: 2,
-                        boost: "speed"
-                    },
-                ]);
-                break;
+function addUI(player){
+    //outline
+    add([
+        rect(100, 10),
+        outline(3),
+        color(0,0,0,0),
+        fixed(),
+        pos(10,10),
+        "ui",
+        z(50),
+    ])
+    //hp
+    const healthBar = add([
+        rect(100, 10),
+        pos(10, 10),
+        color(15, 139, 6),
+        "ui",
+        fixed(),
+        z(50),
+    ]);
+    console.log(healthBar)
+    onUpdate(() => {
+        // Update health bar
+        const maxHp = player.max_health;
+        const currentHp = player.hp();
+
+        healthBar.width = (currentHp / maxHp) * 100;
+    })
+
+    //gold
+    const gold_logo = add([
+        circle(5),
+        pos(width() - 30, 15),
+        color(255, 255, 0),
+        fixed(),
+        "ui",
+        z(50),
+    ])
+
+    const gold =  add([
+        text(player.gold, {size: 20}),
+        pos(width() - 20, 5),
+        color(255, 255, 0),
+        "ui",
+        fixed(),
+        z(50),
+    ]);
+    onUpdate(() => {
+        // Update gold
+        gold.text = player.gold
+    })
+
+}
+
+function addBat(position){
+//add enemy bat
+    bat = add([
+        sprite("bat", {anim: "idle_up"}),
+        pos(position),
+        anchor("center"),
+        area({
+            shape: new Rect(vec2(0), 32, 32),
+            offset: vec2(0, 12),
+        }),
+        scale(0.35),
+        z(1),
+        "bat",
+        "monster",
+        health(10),
+        {
+            bat_direction: RIGHT,
+            att: 10,
+            def: 10,
+            speed: 40,
+            knockback: 20,
+            drops: {
+                gold: 5
+            }
         }
-    }
+    ]);
+    
+    // Set the enemy's behavior to run continuously
+    //for(let i = 0; i < get("bat").length; i++){
+      //  bat = get("bat")[i]
+        loop(randi(1,3), () => {
+            let directions = [RIGHT, LEFT, UP, DOWN]
+            bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
+            if(bat.bat_direction.x == 0 && bat.bat_direction.y == 0){
+                let directions = [RIGHT, LEFT, UP, DOWN]
+                bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
+            }
+        })
+    //}
+}
+
+function enemyBehavior(player){
+    onUpdate("bat", (bat) => {
+        let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
+        if(distance_player_bat < 100){
+            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat.speed + 30)); // Move towards the player
+        }
+        else{
+            let movement = bat.bat_direction.scale(bat.speed)
+            bat.move(movement)
+        }
+    })
+}
+
+function goldCollision(){
+    //gold, player collision
+    onCollide("gold", "player", (gold, player) => {
+        player.gold += gold.gold
+        destroy(gold)
+    })
 }
