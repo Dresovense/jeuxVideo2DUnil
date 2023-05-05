@@ -532,6 +532,15 @@ function drops(monster){
 }
 
 function addUI(player){
+    //outline
+    add([
+        rect(100, 10),
+        outline(3),
+        color(0,0,0,0),
+        fixed(),
+        pos(10,10),
+        "ui"
+    ])
     //hp
     const healthBar = add([
         rect(100, 10),
