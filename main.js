@@ -539,7 +539,8 @@ function addUI(player){
         color(0,0,0,0),
         fixed(),
         pos(10,10),
-        "ui"
+        "ui",
+        z(50),
     ])
     //hp
     const healthBar = add([
@@ -547,7 +548,8 @@ function addUI(player){
         pos(10, 10),
         color(15, 139, 6),
         "ui",
-        fixed()
+        fixed(),
+        z(50),
     ]);
     console.log(healthBar)
     onUpdate(() => {
@@ -564,7 +566,8 @@ function addUI(player){
         pos(width() - 30, 15),
         color(255, 255, 0),
         fixed(),
-        "ui"
+        "ui",
+        z(50),
     ])
 
     const gold =  add([
@@ -572,7 +575,8 @@ function addUI(player){
         pos(width() - 20, 5),
         color(255, 255, 0),
         "ui",
-        fixed()
+        fixed(),
+        z(50),
     ]);
     onUpdate(() => {
         // Update gold
