@@ -65,6 +65,24 @@ loadSpriteAtlas("sprites/ennemies/Monster.png", {
             idle_left: {from: 12, to: 12, loop: true},
             idle_right: {from: 24, to: 24, loop: true}
         }
+    },
+    "slime":{
+        x: 0,
+        y: 0,
+        width: 574,
+        height: 384,
+        sliceX: 12,
+        sliceY: 8,
+        anims: {
+            down: {from: 3, to: 5, loop: true},
+            left: {from: 15, to: 17, loop: true},
+            right: {from: 27, to: 29, loop: true},
+            up: {from: 39, to: 41, loop: true},
+            idle_down: {from: 39, to: 39, loop: true},
+            idle_up: {from: 3, to: 3, loop: true},
+            idle_left: {from: 15, to: 15, loop: true},
+            idle_right: {from: 27, to: 27, loop: true}
+        }
     }
 })
 loadSpriteAtlas("sprites/objects/sword.png", {
@@ -262,10 +280,11 @@ scene("donjon", () => {
     
 
     // add enemies    
-        addBat((400,500));
+        //addBat((400,500));
+        addSlime((400,400))
         enemyBehavior(player, sword); 
 
-        
+
     //collisions (monster and items)
         onCollide("monster", "player", (monster, player) => {
             taking_damage(monster, player)
@@ -281,6 +300,21 @@ scene("donjon", () => {
                     destroy(monster)
                 }
             }
+        })
+
+        //projectile collision
+        onCollide("damage", "player", (projectile, player) => {
+            destroy(projectile)
+            //health
+            damage = projectile.damage - player.def
+            if(damage <= 0){
+                damage = 1
+            }
+            player.hurt(damage)
+            if(player.hp() > 0){
+                damagePopup(damage, player)
+            }
+            console.log(player.hp())
         })
 
         goldCollision()
@@ -500,7 +534,6 @@ function addUI(player){
         fixed(),
         z(50),
     ]);
-    console.log(healthBar)
     onUpdate(() => {
         // Update health bar
         const maxHp = player.max_health;
@@ -550,40 +583,228 @@ function addBat(position){
         "monster",
         health(10),
         {
-            bat_direction: RIGHT,
+            direction: RIGHT,
             att: 10,
             def: 10,
             speed: 40,
             knockback: 20,
             drops: {
                 gold: 5
-            }
+            },
+            currentAnimation: "",
         }
     ]);
     
     // Set the enemy's behavior to run continuously
-    //for(let i = 0; i < get("bat").length; i++){
-      //  bat = get("bat")[i]
         loop(randi(1,3), () => {
             let directions = [RIGHT, LEFT, UP, DOWN]
-            bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
-            if(bat.bat_direction.x == 0 && bat.bat_direction.y == 0){
+            bat.direction = bat.direction.add(directions[randi(4)]).unit()
+            if(bat.direction.x == 0 && bat.direction.y == 0){
                 let directions = [RIGHT, LEFT, UP, DOWN]
-                bat.bat_direction = bat.bat_direction.add(directions[randi(4)]).unit()
+                bat.direction = bat.direction.add(directions[randi(4)]).unit()
+            }
+
+            //anims
+            if(Math.abs(bat.direction.x) > Math.abs(bat.direction.y)){
+                if(bat.direction.x > 0){
+                    bat.play("right")
+                }
+                else{
+                    bat.play("left")
+                }
+            }
+            else{
+                if(bat.direction.y < 0){
+                    bat.play("up")
+                }
+                else{
+                    bat.play("down")
+                }
             }
         })
-    //}
+}
+
+function addSlime(position){
+    //add enemy bat
+        slime = add([
+            sprite("slime", {anim: "idle_up"}),
+            pos(position),
+            anchor("center"),
+            area({
+                shape: new Rect(vec2(0), 32, 32),
+                offset: vec2(0, 12),
+            }),
+            scale(0.4),
+            z(1),
+            "slime",
+            "monster",
+            health(10),
+            {
+                direction: RIGHT,
+                att: 10,
+                def: 10,
+                speed: 20,
+                knockback: 20,
+                drops: {
+                    gold: 5
+                },
+                moving: false
+            }
+        ]);
 }
 
 function enemyBehavior(player){
+    batBehavior(player);
+
+    slimeBehavior(player);
+    
+}
+
+function batBehavior(player){
     onUpdate("bat", (bat) => {
         let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
         if(distance_player_bat < 100){
-            bat.move(vec2(player.pos).sub(bat.pos).unit().scale(bat.speed + 30)); // Move towards the player
+            let direction = vec2(player.pos).sub(bat.pos).unit().scale(bat.speed + 30)
+
+            //anims
+            if(Math.abs(direction.x) > Math.abs(direction.y)){
+                if(direction.x > 0 && bat.currentAnimation != "right"){
+                    bat.play("right")
+                    bat.currentAnimation = "right"
+                }
+                else if(direction.x < 0 && bat.currentAnimation != "left"){
+                    bat.play("left")
+                    bat.currentAnimation = "left"
+                }
+            }
+            else{
+                if(direction.y < 0 && bat.currentAnimation != "up"){
+                    bat.play("up")
+                    bat.currentAnimation = "up"
+                }
+                else if(direction.y > 0 && bat.currentAnimation != "down"){
+                    bat.play("down")
+                    bat.currentAnimation = "down"
+                }
+            }
+            bat.move(direction); // Move towards the player
+
         }
         else{
-            let movement = bat.bat_direction.scale(bat.speed)
+            let movement = bat.direction.scale(bat.speed)
             bat.move(movement)
+        }
+    })
+}
+
+function slimeBehavior(player){
+    const slimes = get("slime")
+    //no player in sight
+    for(let i = 0; i < slimes.length; i++){
+        let slime = slimes[i]
+        // Set the enemy's behavior to run continuously
+        loop(randi(4,6), () => {
+            let directions = [RIGHT, LEFT, UP, DOWN]
+            slime.direction = slime.direction.add(directions[randi(4)]).unit()
+            if(slime.direction.x == 0 && slime.direction.y == 0){
+                let directions = [RIGHT, LEFT, UP, DOWN]
+                slime.direction = slime.direction.add(directions[randi(4)]).unit()
+            }
+    
+            //anims
+            if(Math.abs(slime.direction.x) > Math.abs(slime.direction.y)){
+                if(slime.direction.x > 0){
+                    slime.play("right")
+                }
+                else{
+                    slime.play("left")
+                }
+            }
+            else{
+                if(slime.direction.y < 0){
+                    slime.play("up")
+                }
+                else{
+                    slime.play("down")
+                }
+            }
+    
+            slime.moving = true
+            
+            wait(2, () => {
+                slime.moving = false
+                if(Math.abs(slime.direction.x) > Math.abs(slime.direction.y)){
+                    if(slime.direction.x > 0){
+                        slime.play("idle_right")
+                    }
+                    else{
+                        slime.play("idle_left")
+                    }
+                }
+                else{
+                    if(slime.direction.y < 0){
+                        slime.play("idle_down")
+                    }
+                    else{
+                        slime.play("idle_up")
+                    }
+                }
+            })
+        })
+        // Run script for 2 seconds
+        onUpdate(() => {
+            if(slime.moving == true){
+                let movement = slime.direction.scale(slime.speed)
+                slime.move(movement)
+            }
+        })
+    }
+
+    //player in slight
+    loop(2, () => {
+        if(slime.hp() > 0){
+            let distance_player_slime = vec2(slime.pos).sub(player.pos).len();
+            console.log(distance_player_slime)
+            if(distance_player_slime < 150){
+                run = false;
+                let projectile = add([
+                    circle(5),
+                    pos(slime.pos),
+                    anchor("center"),
+                    area(),
+                    z(1),
+                    color(41,207,207),
+                    "projectile",
+                    "damage",
+                    {
+                        damage: slime.att
+                    }
+                ])
+                let direction = vec2(player.pos).sub(projectile.pos).unit().scale(60)
+                onUpdate(() => {
+                    projectile.move(direction)
+                })
+                wait(rand(1, 2), () => {
+                    if(projectile){
+                        let splash = add([
+                            circle(6),
+                            pos(projectile.pos),
+                            anchor("center"),
+                            area(),
+                            color(41,207,255),
+                            "splash",
+                            "damage",
+                            {
+                                damage: slime.att
+                            }
+                        ])
+                        destroy(projectile)
+                        wait(4, () => {
+                            destroy(splash)
+                        })
+                    }
+                })
+            }
         }
     })
 }
