@@ -799,7 +799,7 @@ function slimeBehavior(player){
                             }
                         ])
                         destroy(projectile)
-                        wait(4, () => {
+                        wait(6, () => {
                             destroy(splash)
                         })
                     }
