@@ -7,8 +7,6 @@ kaboom({
     debug: true,
 });
 
-//Import maps
-//import { maps } from "./maps";
 
 //load sprites
 loadRoot("assets/")
@@ -58,6 +56,14 @@ loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
     }
 })
 
+loadSpriteAtlas("sprites/tilesets/around_wall.png", {
+    "around_wall":{
+        x: 2928,
+        y: 2448,
+        height: 96,
+        width: 96,
+    }
+})
 
 
 loadSprite("ground", "sprites/background/crystal_tile.png")
