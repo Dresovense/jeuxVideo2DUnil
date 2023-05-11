@@ -173,7 +173,42 @@ scene("donjon", () => {
         z(-1)
     ]);
     
-    addLevel(export_maps(Math.floor(Math.random(maps.length-1)*maps.length)),{
+
+    let code = export_maps(Math.floor(Math.random(maps.length-1)*maps.length));
+
+    /* for (let i = 0; i < code.length - 1; i++) {
+      for (let j = 0; j < code[i].length; j++) {
+        if (code[i][j] === "X" && code[i + 1][j] === " ") {
+         code[i] = code[i].substr(0, j) + "Y" + code[i].substr(j + 1);
+        }
+      }
+    }
+      
+    // Print the modified code
+    for (let i = 0; i < code.length; i++) {
+      console.log(code[i])
+    } */
+
+    let modifiedCode = [];
+
+    for (let i = 0; i < code.length - 1; i++) {
+    let modifiedLine = "";
+      for (let j = 0; j < code[i].length; j++) {
+        if (code[i][j] === "X" && code[i + 1][j] === " ") {
+          modifiedLine += "Y";
+        } else {
+          modifiedLine += code[i][j];
+        }
+    }
+    modifiedCode.push(modifiedLine);
+}
+
+    // Print the modified code
+    for (let i = 0; i < modifiedCode.length; i++) {
+      console.log(modifiedCode[i]);
+}
+
+    addLevel(modifiedCode,{
         tileWidth: 24,
         tileHeight: 24,
         tiles: {
