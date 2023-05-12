@@ -56,17 +56,12 @@ loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
     }
 })
 
-loadSpriteAtlas("sprites/tilesets/around_wall.png", {
-    "around_wall":{
-        x: 2928,
-        y: 2448,
-        height: 96,
-        width: 96,
-    }
-})
+loadSprite("around_wall", "sprites/background/around_wall.png")
 
 
 loadSprite("ground", "sprites/background/crystal_tile.png")
+
+
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
     "bat":{
         x: 0,
@@ -110,6 +105,12 @@ scene("donjon", () => {
     ]);
     let background_position = player.pos
     camPos(player.pos)
+
+    add([
+        sprite("around_wall",),
+        pos(500,500),
+        anchor("center"),
+    ]);
 
     //add controls and animations
     onKeyDown("right", () => {
