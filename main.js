@@ -108,7 +108,7 @@ scene("donjon", () => {
 
     add([
         sprite("around_wall",),
-        pos(500,500),
+        pos(0,0),
         anchor("center"),
     ]);
 
