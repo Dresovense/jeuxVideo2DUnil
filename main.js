@@ -56,7 +56,12 @@ loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
     }
 })
 
-loadSprite("around_wall", "sprites/background/around_wall.png")
+loadSprite("top_right_wall", "sprites/background/top_right_wall.png")
+loadSprite("top_left_wall", "sprites/background/top_left_wall.png")
+loadSprite("bottom_right_wall", "sprites/background/bottom_right_wall.png")
+loadSprite("bottom_left_wall", "sprites/background/bottom_left_wall.png")
+loadSprite("inbetween_wall_sides", "sprites/background/inbetween_wall_sides.png")
+loadSprite("inbetween_wall_front", "sprites/background/inbetween_wall_front.png")
 
 
 loadSprite("ground", "sprites/background/crystal_tile.png")
@@ -106,10 +111,42 @@ scene("donjon", () => {
     let background_position = player.pos
     camPos(player.pos)
 
+    //Add around the map walls
     add([
-        sprite("around_wall",),
-        pos(0,0),
+        sprite("top_left_wall",),
+        pos(48,120),
         anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("bottom_left_wall",),
+        pos(48,720),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("top_right_wall",),
+        pos(744,120),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("bottom_right_wall",),
+        pos(744,720),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("inbetween_wall_sides",),
+        pos(-108,420),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("inbetween_wall_sides",),
+        pos(900,420),
+        anchor("center"),
+        scale(0.25)
     ]);
 
     //add controls and animations
@@ -181,6 +218,7 @@ scene("donjon", () => {
     ]);
     
 
+    //Exporter maps du fichiers maps
     let code = export_maps(Math.floor(Math.random(maps.length-1)*maps.length));
 
     /* for (let i = 0; i < code.length - 1; i++) {
@@ -196,6 +234,8 @@ scene("donjon", () => {
       console.log(code[i])
     } */
 
+
+    //Modifier les X en dessus d'une case vide de chaque map en Y
     let modifiedCode = [];
 
     for (let i = 0; i < code.length - 1; i++) {
@@ -209,8 +249,6 @@ scene("donjon", () => {
     }
     modifiedCode.push(modifiedLine);
 }
-
-    // Print the modified code
     for (let i = 0; i < modifiedCode.length; i++) {
       console.log(modifiedCode[i]);
 }
@@ -232,12 +270,6 @@ scene("donjon", () => {
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
-            ],
-            "Z": () => [
-                sprite("wall_top"),
-                anchor("center"),
-                scale(0.25),
-                area(),
             ]
         }
     })
@@ -318,7 +350,7 @@ scene("donjon", () => {
 
     //add enemy bat
     //let bat_direction = RIGHT
-    let bat_SPEED = 50
+    /* let bat_SPEED = 50
     let bat = add([
         sprite("bat", {anim: "idle_up"}),
         pos(400,500),
@@ -351,7 +383,7 @@ scene("donjon", () => {
         {
             bat_direction: RIGHT
         }
-    ]);
+    ]); */
 
     
     // Set the enemy's behavior to run continuously
