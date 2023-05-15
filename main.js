@@ -121,7 +121,7 @@ scene("donjon", () => {
             z(1),
             body(),
             "player",
-            health(50),
+            health(playerStats.max_health),
             playerStats
         ]);
         sword = add([
@@ -453,7 +453,7 @@ scene("shop", () => {
         "speed"
     ])
     let speed_text = add([
-        text("SPEED"),
+        text("SPEED(+5)",{size: 24}),
         pos(40,110),
         color(0,0,0)
     ])
@@ -477,7 +477,7 @@ scene("shop", () => {
         "hp"
     ])
     let hp_text = add([
-        text("HP"),
+        text("HP(+5)",{size: 27}),
         pos(40,150),
         color(0,0,0)
     ])
@@ -526,12 +526,12 @@ let playerStats = {
     def: 1,
     speed: 10,
     knockback: 20,
-    gold: 10,
+    gold: 0,
     max_health: 10
 }
 sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
-go('shop')
+go('donjon')
 
 function check_movement(direction, player){
     if(direction.y == 1){
@@ -741,6 +741,7 @@ function addUI(player){
         fixed(),
         z(50),
     ]);
+    console.log(player.max_health)
     onUpdate(() => {
         // Update health bar
         const maxHp = player.max_health;
@@ -1034,33 +1035,81 @@ function menuHighlight(previousTabTag, currentTabTag){
 function buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_hp, player_att_stat, player_def_stat, player_speed_stat, player_hp_stat, player_gold_stat){
     if(currentTab == 0){
         //check gold
-        playerStats.gold -= Math.pow(2, playerStats.att - 1)
+        price = Math.pow(2, playerStats.att - 1)
+        if(price > 999){
+            playerStats.gold -= 999         
+        }
+        else{
+            playerStats.gold -= price
+        }
         playerStats.att++
-        gold_att.text = Math.pow(2, playerStats.att - 1)
+        future_price = Math.pow(2, playerStats.att - 1)
+        if(future_price > 999){
+            gold_att.text = 999         
+        }
+        else{
+            gold_att.text = future_price
+        }
         player_att_stat.text = playerStats.att
         player_gold_stat.text = playerStats.gold
     }
     else if(currentTab == 1){
         //check gold
-        playerStats.gold -= Math.pow(2, playerStats.def - 1)
+        price = Math.pow(2, playerStats.def - 1)
+        if(price > 999){
+            playerStats.gold -= 999         
+        }
+        else{
+            playerStats.gold -= price
+        }
         playerStats.def++
-        gold_def.text = Math.pow(2, playerStats.def - 1)
+        future_price = Math.pow(2, playerStats.def - 1)
+        if(future_price > 999){
+            gold_def.text = 999         
+        }
+        else{
+            gold_def.text = future_price
+        }
         player_def_stat.text = playerStats.def
         player_gold_stat.text = playerStats.gold
     }
     else if(currentTab == 2){
         //check gold
-        playerStats.gold -= Math.pow(2, playerStats.speed / 5 - 2) //speed increases each 5
+        price = Math.pow(2, playerStats.speed / 5 - 2)
+        if(price > 999){
+            playerStats.gold -= 999         
+        }
+        else{
+            playerStats.gold -= price
+        }
         playerStats.speed += 5
-        gold_speed.text = Math.pow(2, playerStats.speed / 5 - 2)
+        future_price = Math.pow(2, playerStats.speed / 5 - 2)
+        if(future_price > 999){
+            gold_speed.text = 999         
+        }
+        else{
+            gold_speed.text = future_price
+        }
         player_speed_stat.text = playerStats.speed
         player_gold_stat.text = playerStats.gold
     }
     else if(currentTab == 3){
         //check gold
-        playerStats.gold -= Math.pow(2, playerStats.max_health / 5 - 2)     //hp increases each 5
+        price = Math.pow(2, playerStats.max_health / 5 - 2)
+        if(price > 999){
+            playerStats.gold -= 999         
+        }
+        else{
+            playerStats.gold -= price
+        }
         playerStats.max_health += 5
-        gold_hp.text = Math.pow(2, playerStats.max_health / 5 - 2)
+        future_price = Math.pow(2, playerStats.max_health / 5 - 2)
+        if(future_price > 999){
+            gold_hp.text = 999         
+        }
+        else{
+            gold_hp.text = future_price
+        }
         player_hp_stat.text = playerStats.max_health
         player_gold_stat.text = playerStats.gold
     }
