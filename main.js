@@ -148,6 +148,18 @@ scene("donjon", () => {
         anchor("center"),
         scale(0.25)
     ]);
+    add([
+        sprite("inbetween_wall_front",),
+        pos(396,-72),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("inbetween_wall_front",),
+        pos(396,912),
+        anchor("center"),
+        scale(0.25)
+    ]);
 
     //add controls and animations
     onKeyDown("right", () => {
