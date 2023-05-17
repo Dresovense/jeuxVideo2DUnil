@@ -333,7 +333,7 @@ scene("donjon", () => {
     
 
     //Exporter maps du fichiers maps
-    let code = export_maps(Math.floor(Math.random(maps.length-1)*maps.length));log(code[i])
+    let code = export_maps(Math.floor(Math.random(maps.length-1)*maps.length));//log(code[i])
 
 
 
@@ -717,6 +717,7 @@ function map_generator(){
         }
       }
     }
+}
 function addBat(position){
 //add enemy bat
     bat = add([
