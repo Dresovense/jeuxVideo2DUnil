@@ -1880,7 +1880,22 @@ const maps = [
 ]
 
 
+const house = [
+  "AZZZZZZZZZZZZB",
+  "EFFFFEFFFFFFFE",
+  "E GH E L  MNOE",
+  "E IJ E       E",
+  "E    K   P   E",
+  "E    K  PLP  E",
+  "E        P   E",
+  "CZZZZZ ZZZZZZD"
+]
+
 
 function export_maps(x) {
-    return maps[x]
+  return maps[x]
+}
+
+function export_house() {
+  return house
 }
