@@ -250,20 +250,25 @@ scene("donjon", () => {
     //Modifier les X en dessus d'une case vide de chaque map en Y
     let modifiedCode = [];
 
-    for (let i = 0; i < code.length - 1; i++) {
-    let modifiedLine = "";
-      for (let j = 0; j < code[i].length; j++) {
-        if (code[i][j] === "X" && code[i + 1][j] === " ") {
-          modifiedLine += "Y";
-        } else {
-          modifiedLine += code[i][j];
+    for (let i = 0; i < code.length; i++) {
+        let modifiedLine = "";
+        for (let j = 0; j < code[i].length; j++) {
+            if (code[i][j] === "X" && i != (code.length - 1) && code[i + 1][j] === " ") {
+            modifiedLine += "Y";
+            } else {
+            modifiedLine += code[i][j];
+            }
         }
+        modifiedCode.push(modifiedLine);
     }
-    modifiedCode.push(modifiedLine);
-}
     for (let i = 0; i < modifiedCode.length; i++) {
       console.log(modifiedCode[i]);
 }
+for (let i = 0; i < code.length; i++) {
+    console.log(code[i]);
+}
+console.log(code.length,  modifiedCode.length)
+
 
     addLevel(modifiedCode,{
         tileWidth: 24,
