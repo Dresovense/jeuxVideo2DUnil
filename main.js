@@ -362,7 +362,7 @@ scene("shop", () => {
     ])
 
     let player_speed_text = add([
-        text("SPD:", {size: 15}),
+        text("VIT:", {size: 15}),
         pos(250, 170),
         color(0,0,0)
     ])
@@ -384,7 +384,7 @@ scene("shop", () => {
     ])
 
     let player_gold_text = add([
-        text("Gold available:", {size: 25}),
+        text("Or disponible:", {size: 25}),
         color(255, 215, 0),
         pos(70,200)
     ])
@@ -453,7 +453,7 @@ scene("shop", () => {
         "speed"
     ])
     let speed_text = add([
-        text("SPEED(+5)",{size: 24}),
+        text("VIT(+5)",{size: 24}),
         pos(40,110),
         color(0,0,0)
     ])
@@ -531,7 +531,7 @@ let playerStats = {
 }
 sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
-go('donjon')
+go('shop')
 
 function check_movement(direction, player){
     if(direction.y == 1){
@@ -1036,82 +1036,121 @@ function buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_h
     if(currentTab == 0){
         //check gold
         price = Math.pow(2, playerStats.att - 1)
-        if(price > 999){
-            playerStats.gold -= 999         
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.att++
+            future_price = Math.pow(2, playerStats.att - 1)
+            if(future_price > 999){
+                gold_att.text = 999         
+            }
+            else{
+                gold_att.text = future_price
+            }
+            player_att_stat.text = playerStats.att
+            player_gold_stat.text = playerStats.gold
         }
         else{
-            playerStats.gold -= price
+            notEnoughGold()
         }
-        playerStats.att++
-        future_price = Math.pow(2, playerStats.att - 1)
-        if(future_price > 999){
-            gold_att.text = 999         
-        }
-        else{
-            gold_att.text = future_price
-        }
-        player_att_stat.text = playerStats.att
-        player_gold_stat.text = playerStats.gold
     }
     else if(currentTab == 1){
         //check gold
         price = Math.pow(2, playerStats.def - 1)
-        if(price > 999){
-            playerStats.gold -= 999         
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.def++
+            future_price = Math.pow(2, playerStats.def - 1)
+            if(future_price > 999){
+                gold_def.text = 999         
+            }
+            else{
+                gold_def.text = future_price
+            }
+            player_def_stat.text = playerStats.def
+            player_gold_stat.text = playerStats.gold
         }
         else{
-            playerStats.gold -= price
+            notEnoughGold()
         }
-        playerStats.def++
-        future_price = Math.pow(2, playerStats.def - 1)
-        if(future_price > 999){
-            gold_def.text = 999         
-        }
-        else{
-            gold_def.text = future_price
-        }
-        player_def_stat.text = playerStats.def
-        player_gold_stat.text = playerStats.gold
     }
     else if(currentTab == 2){
         //check gold
         price = Math.pow(2, playerStats.speed / 5 - 2)
-        if(price > 999){
-            playerStats.gold -= 999         
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.speed += 5
+            future_price = Math.pow(2, playerStats.speed / 5 - 2)
+            if(future_price > 999){
+                gold_speed.text = 999         
+            }
+            else{
+                gold_speed.text = future_price
+            }
+            player_speed_stat.text = playerStats.speed
+            player_gold_stat.text = playerStats.gold
         }
         else{
-            playerStats.gold -= price
+            notEnoughGold()
         }
-        playerStats.speed += 5
-        future_price = Math.pow(2, playerStats.speed / 5 - 2)
-        if(future_price > 999){
-            gold_speed.text = 999         
-        }
-        else{
-            gold_speed.text = future_price
-        }
-        player_speed_stat.text = playerStats.speed
-        player_gold_stat.text = playerStats.gold
     }
     else if(currentTab == 3){
         //check gold
         price = Math.pow(2, playerStats.max_health / 5 - 2)
-        if(price > 999){
-            playerStats.gold -= 999         
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.max_health += 5
+            future_price = Math.pow(2, playerStats.max_health / 5 - 2)
+            if(future_price > 999){
+                gold_hp.text = 999         
+            }
+            else{
+                gold_hp.text = future_price
+            }
+            player_hp_stat.text = playerStats.max_health
+            player_gold_stat.text = playerStats.gold
         }
         else{
-            playerStats.gold -= price
+            notEnoughGold()
         }
-        playerStats.max_health += 5
-        future_price = Math.pow(2, playerStats.max_health / 5 - 2)
-        if(future_price > 999){
-            gold_hp.text = 999         
-        }
-        else{
-            gold_hp.text = future_price
-        }
-        player_hp_stat.text = playerStats.max_health
-        player_gold_stat.text = playerStats.gold
     }
     console.log(playerStats)
+}
+
+function notEnoughGold(){
+    add([
+        text("Vous n'avez pas assez d'or!!", {size: 20}),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        color(255, 255, 0),
+        z(100),
+        lifespan(0.5)
+    ])
+    add([
+        rect(350,50),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        z(51),
+        color(0,0,0),
+        lifespan(0.5)
+    ])
 }
