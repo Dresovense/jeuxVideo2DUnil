@@ -1,9 +1,12 @@
+
+
 kaboom({
     width: 400,
     height: 240,
     scale: 2.5,
     debug: true,
 });
+
 
 //load sprites
 loadRoot("assets/")
@@ -38,15 +41,35 @@ loadSpriteAtlas("sprites/characters/yasuna1 2.png", {
 
     }
 })
-loadSpriteAtlas("sprites/tilesets/Dungeon_A2.png", {
-    "test":{
-        x: 0,
-        y: 0,
-        height: 64,
-        width: 64,
+loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
+    "wall":{
+        x: 96,
+        y: 624,
+        height: 96,
+        width: 96,
     }
 })
-loadSprite("ground", "sprites/background/stone_tile.png")
+
+loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
+    "wall_top":{
+        x: 96,
+        y: 528,
+        height: 96,
+        width: 96,
+    }
+})
+
+loadSprite("top_right_wall", "sprites/background/top_right_wall.png")
+loadSprite("top_left_wall", "sprites/background/top_left_wall.png")
+loadSprite("bottom_right_wall", "sprites/background/bottom_right_wall.png")
+loadSprite("bottom_left_wall", "sprites/background/bottom_left_wall.png")
+loadSprite("inbetween_wall_sides", "sprites/background/inbetween_wall_sides.png")
+loadSprite("inbetween_wall_front", "sprites/background/inbetween_wall_front.png")
+
+
+loadSprite("ground", "sprites/background/crystal_tile.png")
+
+
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
     "bat":{
         x: 0,
@@ -102,6 +125,55 @@ loadSpriteAtlas("sprites/objects/sword.png", {
   
 
 scene("donjon", () => {
+    //Add around the map walls
+    add([
+        sprite("top_left_wall",),
+        pos(48,120),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("bottom_left_wall",),
+        pos(48,720),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("top_right_wall",),
+        pos(744,120),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("bottom_right_wall",),
+        pos(744,720),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("inbetween_wall_sides",),
+        pos(-108,420),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("inbetween_wall_sides",),
+        pos(900,420),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("inbetween_wall_front",),
+        pos(396,-72),
+        anchor("center"),
+        scale(0.25)
+    ]);
+    add([
+        sprite("inbetween_wall_front",),
+        pos(396,912),
+        anchor("center"),
+        scale(0.25)
+    ]);
     //Create player, movement, and level
         let direction = vec2(0,0)    //changer selon la position de départ
         let lastKnownDirection = vec2(0,0)
@@ -244,40 +316,69 @@ scene("donjon", () => {
                 })
             }
         })
-
-        //background moves with the player
-        let background = add([
-            sprite("ground", {width: width(), height: height()}),
-            pos(player.pos),
-            anchor("center"),
-            scale(1.5),
-            z(-1)
-        ]);
-        
-        addLevel([
-            "       5        ",
-            "           5    ",
-            "           5    ",
-            "       5    5    ",
-            "       5    5    ",
-            "  5         5    ",
-            "     5      5    ",
-        ],{
-            tileWidth: 32,
-            tileHeight: 32,
-            tiles: {
-                "5": () => [
-                    sprite("test"),
-                    anchor("center")
-                ]
-            }
-        })
+  
+    //background moves with the player
+    let background = add([
+        sprite("ground", {width: width(), height: height()}),
+        pos(player.pos),
+        anchor("center"),
+        scale(1.5),
+        z(-1)
+    ]);
     
 
-    // add enemies    
-        //addBat((400,500));
+    //Exporter maps du fichiers maps
+    let code = export_maps(Math.floor(Math.random(maps.length-1)*maps.length));//log(code[i])
+
+
+
+    //Modifier les X en dessus d'une case vide de chaque map en Y
+    let modifiedCode = [];
+
+    for (let i = 0; i < code.length; i++) {
+        let modifiedLine = "";
+        for (let j = 0; j < code[i].length; j++) {
+            if (code[i][j] === "X" && i != (code.length - 1) && code[i + 1][j] === " ") {
+            modifiedLine += "Y";
+            } else {
+            modifiedLine += code[i][j];
+            }
+        }
+        modifiedCode.push(modifiedLine);
+    }
+    for (let i = 0; i < modifiedCode.length; i++) {
+      console.log(modifiedCode[i]);
+}
+for (let i = 0; i < code.length; i++) {
+    console.log(code[i]);
+}
+console.log(code.length,  modifiedCode.length)
+
+
+    addLevel(modifiedCode,{
+        tileWidth: 24,
+        tileHeight: 24,
+        tiles: {
+            "Y": () => [
+                sprite("wall"),
+                anchor("center"),
+                scale(0.25),
+                area(),
+                body({isStatic:true}),
+            ],
+            "X": () => [
+                sprite("wall_top"),
+                anchor("center"),
+                scale(0.25),
+                area(),
+                body({isStatic:true}),
+            ]
+        }
+    })
+
         addSlime((400,400))
         enemyBehavior(player, sword); 
+
 
 
     //collisions (monster and items)
@@ -775,6 +876,56 @@ function addUI(player){
 
 }
 
+function map_generator(){
+    // Define the size of the dungeon
+    const dungeonWidth = 10;
+    const dungeonHeight = 10;
+
+    // Create a 2D array to represent the dungeon
+    const dungeonMap = new Array(dungeonHeight).fill(null).map(() => new Array(dungeonWidth).fill(null));
+
+    // Fill the dungeon with walls
+    for (let y = 0; y < dungeonHeight; y++) {
+      for (let x = 0; x < dungeonWidth; x++) {
+        dungeonMap[y][x] = "wall";
+      }
+    }
+
+    // Dig out rooms and corridors
+    for (let i = 0; i < 50; i++) {
+     // Choose a random point in the dungeon
+     const x = Math.floor(Math.random() * dungeonWidth);
+      const y = Math.floor(Math.random() * dungeonHeight);
+  
+      // Dig out a room or corridor from that point
+      if (Math.random() < 0.5) {
+        const roomWidth = Math.floor(Math.random() * 5) + 2;
+        const roomHeight = Math.floor(Math.random() * 5) + 2;
+        for (let dy = 0; dy < roomHeight; dy++) {
+          for (let dx = 0; dx < roomWidth; dx++) {
+            const nx = x - Math.floor(roomWidth / 2) + dx;
+            const ny = y - Math.floor(roomHeight / 2) + dy;
+            if (nx >= 1 && nx < dungeonWidth - 1 && ny >= 1 && ny < dungeonHeight - 1) {
+              dungeonMap[ny][nx] = "floor";
+            }
+          }
+        }
+      } else {
+        const dirX = Math.random() < 0.5 ? -1 : 1;
+        const dirY = Math.random() < 0.5 ? -1 : 1;
+        const corridorLength = Math.floor(Math.random() * 8) + 3;
+        let corridorX = x;
+        let corridorY = y;
+        for (let j = 0; j < corridorLength; j++) {
+          if (corridorX >= 1 && corridorX < dungeonWidth - 1 && corridorY >= 1 && corridorY < dungeonHeight - 1) {
+            dungeonMap[corridorY][corridorX] = "floor";
+          }
+          corridorX += dirX;
+          corridorY += dirY;
+        }
+      }
+    }
+}
 function addBat(position){
 //add enemy bat
     bat = add([
