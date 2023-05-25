@@ -264,13 +264,14 @@ scene("house", () => {
     let direction = vec2(0,0)    //changer selon la position de départ
     let lastKnownDirection = vec2(0,0)
     
-    //Chatbox door house
-    /* let doors = {
-        "R": {
-            sprite: "exit_house",
-            msg: "Est-ce que tu veux sortir de la maison ? Appuie sur 'y' pour oui et 'n' pour non",
-        },
-    } */
+    //Chatbox door house test
+    const characters = {
+		"R": {
+			sprite: "exit_house",
+			msg: "Est-ce que tu veux sortir de la maison ?",
+		},
+		
+	}
     
 
     //add player sprite
@@ -540,31 +541,31 @@ scene("house", () => {
                 scale(0.5),
                 area(),
             ],
-            "R": () => [
+            /* "R": () => [
                 sprite("exit_house"),
                 anchor("center"),
                 scale(0.5),
                 area(),
                 body({isStatic:true}),
                 "house_door"
-            ]
+            ] */
         },
         
         //Code pris de Kaboom pour le "dialogue"
-        /* wildcardTile(dr) {
-			const door = doors[dr]
-			if (door) {
+        wildcardTile(ch) {
+			const char = characters[ch]
+			if (char) {
 				return [
-					sprite(door.sprite),
+					sprite(char.sprite),
 					area(),
 					body({ isStatic: true }),
 					anchor("center"),
+					"character",
                     scale(0.5),
-					"doors",
-					{ msg: door.msg },
+					{ msg: char.msg },
 				]
 			}
-		}, */
+		},
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
@@ -633,7 +634,7 @@ scene("donjon", () => {
         //add player sprite
         let player = add([
             sprite("player", {anim: "idle_up"}),
-            pos(250,250),
+            pos(35,25),
             anchor("center"),
             area({
                 shape: new Rect(vec2(0), 32, 32),
