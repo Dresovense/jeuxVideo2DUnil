@@ -59,6 +59,132 @@ loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
     }
 })
 
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "chair":{
+        x: 0,
+        y: 624,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A2.png", {
+    "table":{
+        x: 672,
+        y: 0,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "kitchen1":{
+        x: 0,
+        y: 672,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "kitchen2":{
+        x: 48,
+        y: 672,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "kitchen3":{
+        x: 144,
+        y: 672,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed1":{
+        x: 48,
+        y: 480,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed2":{
+        x: 96,
+        y: 480,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed3":{
+        x: 48,
+        y: 524,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed4":{
+        x: 96,
+        y: 524,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_insidetop":{
+        x: 96,
+        y: 336,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_inside1":{
+        x: 288,
+        y: 432,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_inside2":{
+        x: 0,
+        y: 432,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_inside3":{
+        x: 0,
+        y: 384,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A5.png", {
+    "black_void":{
+        x: 0,
+        y: 0,
+        height: 48,
+        width: 48,
+    }
+})
+
 loadSprite("top_right_wall", "sprites/background/top_right_wall.png")
 loadSprite("top_left_wall", "sprites/background/top_left_wall.png")
 loadSprite("bottom_right_wall", "sprites/background/bottom_right_wall.png")
@@ -174,6 +300,7 @@ scene("donjon", () => {
         anchor("center"),
         scale(0.25)
     ]);
+
     //Create player, movement, and level
         let direction = vec2(0,0)    //changer selon la position de départ
         let lastKnownDirection = vec2(0,0)
@@ -181,7 +308,7 @@ scene("donjon", () => {
         //add player sprite
         let player = add([
             sprite("player", {anim: "idle_up"}),
-            pos(500,500),
+            pos(250,250),
             anchor("center"),
             area({
                 shape: new Rect(vec2(0), 32, 32),
@@ -377,6 +504,102 @@ console.log(code.length,  modifiedCode.length)
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
+            ],
+            "E": () => [
+                sprite("wall_insidetop"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "F": () => [
+                sprite("wall_inside1"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "G": () => [
+                sprite("bed1"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "H": () => [
+                sprite("bed2"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "I": () => [
+                sprite("bed3"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "J": () => [
+                sprite("bed4"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "K": () => [
+                sprite("wall_inside3"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "Q": () => [
+                sprite("wall_inside2"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "L": () => [
+                sprite("table"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "M": () => [
+                sprite("kitchen1"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "N": () => [
+                sprite("kitchen2"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "O": () => [
+                sprite("kitchen3"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "P": () => [
+                sprite("chair"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+            ],
+            "V": () => [
+                sprite("black_void"),
+                anchor("center"),
+                scale(0.5),
+                area(),
             ]
         }
     })
