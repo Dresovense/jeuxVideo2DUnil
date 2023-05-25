@@ -550,7 +550,7 @@ scene("house", () => {
             ]
         },
         
-        //Code pris de Kaboom
+        //Code pris de Kaboom pour le "dialogue"
         /* wildcardTile(dr) {
 			const door = doors[dr]
 			if (door) {
