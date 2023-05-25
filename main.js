@@ -203,6 +203,7 @@ loadSprite("inbetween_wall_front", "sprites/background/inbetween_wall_front.png"
 
 
 loadSprite("ground", "sprites/background/crystal_tile.png")
+loadSprite("house_ground", "sprites/background/house_background3.png")
 
 
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
@@ -263,6 +264,15 @@ scene("house", () => {
     let direction = vec2(0,0)    //changer selon la position de départ
     let lastKnownDirection = vec2(0,0)
     
+    //Chatbox door house
+    /* let doors = {
+        "R": {
+            sprite: "exit_house",
+            msg: "Est-ce que tu veux sortir de la maison ? Appuie sur 'y' pour oui et 'n' pour non",
+        },
+    } */
+    
+
     //add player sprite
     let player = add([
         sprite("player", {anim: "idle_up"}),
@@ -306,7 +316,7 @@ scene("house", () => {
         player.move(RIGHT.scale(player.speed))
         sword.move(RIGHT.scale(player.speed))
         camPos(player.pos)
-        background_position = background_following(player, background, background_position)
+        //background_position = background_following(player, background, background_position)
     })
     onKeyPress("right", () => {
         direction = direction.add(RIGHT)
@@ -321,7 +331,7 @@ scene("house", () => {
         player.move(LEFT.scale(player.speed))
         sword.move(LEFT.scale(player.speed))
         camPos(player.pos)
-        background_position = background_following(player, background, background_position)
+        //background_position = background_following(player, background, background_position)
     })
     onKeyPress("left", () => {
         direction = direction.add(LEFT)
@@ -336,7 +346,7 @@ scene("house", () => {
         player.move(UP.scale(player.speed))
         sword.move(UP.scale(player.speed))
         camPos(player.pos)
-        background_position = background_following(player, background, background_position)
+        //background_position = background_following(player, background, background_position)
     })
     onKeyPress("up", () => {
         direction = direction.add(UP)
@@ -351,7 +361,7 @@ scene("house", () => {
         player.move(DOWN.scale(player.speed))
         sword.move(DOWN.scale(player.speed))
         camPos(player.pos)
-        background_position = background_following(player, background, background_position)
+        //background_position = background_following(player, background, background_position)
     })
     onKeyPress("down", () => {
         direction = direction.add(DOWN)
@@ -362,8 +372,9 @@ scene("house", () => {
         lastKnownDirection = check_movement(direction, player)
     })
 
+    //Press space to pass the door ? Test en cours
     onKeyPress("space", () => {
-        if(swordUsed == false){
+        /* if(swordUsed == false){
             swordUsed = true
             console.log(lastKnownDirection)
             if(lastKnownDirection.y == -1){
@@ -404,15 +415,15 @@ scene("house", () => {
                 sword.pos.y = player.pos.y
                 swordUsed = false
             })
-        }
+        } */
     })
 
     //background moves with the player
     let background = add([
-        sprite("ground", {width: width(), height: height()}),
-        pos(player.pos),
+        sprite("house_ground", {width: width(), height: height()}),
+        pos(350,190),
         anchor("center"),
-        scale(1.5),
+        scale(1),
         z(-1)
     ]);
     addLevel(export_house(),{
@@ -537,11 +548,31 @@ scene("house", () => {
                 body({isStatic:true}),
                 "house_door"
             ]
-        }
+        },
+        
+        //Code pris de Kaboom
+        /* wildcardTile(dr) {
+			const door = doors[dr]
+			if (door) {
+				return [
+					sprite(door.sprite),
+					area(),
+					body({ isStatic: true }),
+					anchor("center"),
+                    scale(0.5),
+					"doors",
+					{ msg: door.msg },
+				]
+			}
+		}, */
     })
     onCollide("house_door", "player", () => {
-        go("donjon")
+        onKeyPress("space", () => {
+            go("donjon")
     })
+    //})
+    
+})
 })
 
 scene("donjon", () => {
@@ -897,6 +928,10 @@ console.log(code.length,  modifiedCode.length)
             ]
         }
     })
+    //Potion de retour pour MJ
+    onKeyPress("p", () => {
+        go("house")
+    })
 
         addSlime((400,400))
         enemyBehavior(player, sword); 
@@ -943,6 +978,53 @@ console.log(code.length,  modifiedCode.length)
 })
 
 go('house')
+
+
+//Hide background when text appear
+function addDialog() {
+    const h = 160
+    const pad = 16
+    const bg = add([
+        pos(0, height() - h),
+        rect(width(), h),
+        color(0, 0, 0),
+        z(100),
+    ])
+    const txt = add([
+        text("", {
+            width: width(),
+        }),
+        pos(0 + pad, height() - h + pad),
+        z(100),
+    ])
+    bg.hidden = true
+    txt.hidden = true
+    return {
+        say(t) {
+            txt.text = t
+            bg.hidden = false
+            txt.hidden = false
+        },
+        dismiss() {
+            if (!this.active()) {
+                return
+            }
+            txt.text = ""
+            bg.hidden = true
+            txt.hidden = true
+        },
+        active() {
+            return !bg.hidden
+        },
+        destroy() {
+            bg.destroy()
+            txt.destroy()
+        },
+    }
+}
+
+let hasKey = false
+	const dialog = addDialog()
 
 function check_movement(direction, player){
     if(direction.y == 1){
