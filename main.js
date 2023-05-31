@@ -904,6 +904,13 @@ scene("shop", () => {
         scale(2.5),
     ])
 
+    let quit = add([
+        text("Press S to start:", {size: 5}),
+        pos(10,10),
+        scale(2.5),
+        color(0,0,0)
+    ])
+
     let playerSprite = add([
         sprite("player", {anim: "idle_down"}),
         pos(315, 80),
@@ -1090,6 +1097,10 @@ scene("shop", () => {
 
     onKeyPress("enter", () => {
         buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_hp, player_att_stat, player_def_stat, player_speed_stat, player_hp_stat, player_gold_stat)
+    })
+
+    onKeyPress("s", () => {
+        go("donjon")
     })
 })
 
