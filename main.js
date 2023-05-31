@@ -905,7 +905,7 @@ scene("shop", () => {
     ])
 
     let quit = add([
-        text("Press S to start:", {size: 5}),
+        text("Press Space to start:", {size: 5}),
         pos(10,10),
         scale(2.5),
         color(0,0,0)
@@ -1099,7 +1099,7 @@ scene("shop", () => {
         buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_hp, player_att_stat, player_def_stat, player_speed_stat, player_hp_stat, player_gold_stat)
     })
 
-    onKeyPress("s", () => {
+    onKeyPress("space", () => {
         go("donjon")
     })
 })
@@ -1425,8 +1425,8 @@ function addBat(position){
         health(10),
         {
             direction: RIGHT,
-            att: 10,
-            def: 10,
+            att: 2,
+            def: 3,
             speed: 4,
             knockback: 5,
             drops: {
@@ -1484,8 +1484,8 @@ function addSlime(position){
         health(10),
         {
             direction: RIGHT,
-            att: 10,
-            def: 10,
+            att: 5,
+            def: 2,
             speed: 2,
             knockback: 5,
             drops: {
