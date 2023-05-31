@@ -256,6 +256,8 @@ loadSpriteAtlas("sprites/objects/sword.png", {
         }
     }
 })
+
+loadSprite("start", "start/starting_screen.png")
   
 scene("house", () => {
     //Create player, movement, and level
@@ -839,62 +841,28 @@ scene("donjon", () => {
     //add UI
         addUI(player);  
 
+    player.on("death", () => {
+        add([
+            text("Vous êtes mort", {size: 20}),
+            pos(width() / 2, height() / 2),
+            anchor("center"),
+            fixed(),
+            color(255,0,0),
+            z(51)
+        ])
+        destroy(player)
+        sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
+        wait(3, () => {
+            go("house")
+        })
+    })
+
 })
-
-
-go('house')
-
-
-//Hide background when text appear
-function addDialog() {
-    const h = 160
-    const pad = 16
-    const bg = add([
-        pos(0, height() - h),
-        rect(width(), h),
-        color(0, 0, 0),
-        z(100),
-    ])
-    const txt = add([
-        text("", {
-            width: width(),
-        }),
-        pos(0 + pad, height() - h + pad),
-        z(100),
-    ])
-    bg.hidden = true
-    txt.hidden = true
-    return {
-        say(t) {
-            txt.text = t
-            bg.hidden = false
-            txt.hidden = false
-        },
-        dismiss() {
-            if (!this.active()) {
-                return
-            }
-            txt.text = ""
-            bg.hidden = true
-            txt.hidden = true
-        },
-        active() {
-            return !bg.hidden
-        },
-        destroy() {
-            bg.destroy()
-            txt.destroy()
-        },
-    }
-}
-
-let hasKey = false
-	const dialog = addDialog()
 
 scene("shop", () => {
     let playerStats = JSON.parse(sessionStorage.getItem("playerStats"))
 
-    let order = ["att","def","speed", "hp"]
+    let order = ["att","def","hp"]
     let currentTab = 0
 
     let background = add([
@@ -940,25 +908,14 @@ scene("shop", () => {
         color(0,0,0)
     ])
 
-    let player_speed_text = add([
-        text("VIT:", {size: 15}),
-        pos(250, 170),
-        color(0,0,0)
-    ])
-    let player_speed_stat = add([
-        text(playerStats.speed, {size: 15}),
-        pos(290, 170),
-        color(0,0,0)
-    ])
-
     let player_hp_text = add([
         text("HP:", {size: 15}),
-        pos(320, 170),
+        pos(250, 170),
         color(0,0,0)
     ])
     let player_hp_stat = add([
         text(playerStats.max_health, {size: 15}),
-        pos(360, 170),
+        pos(290, 170),
         color(0,0,0)
     ])
 
@@ -1025,49 +982,25 @@ scene("shop", () => {
     ]);
     gold_def.text =  Math.pow(2, playerStats.def - 1)
 
-    let speed = add([
-        rect(200, 30),
-        color(242,255,230),
-        pos(20,110),
-        "speed"
-    ])
-    let speed_text = add([
-        text("VIT(+5)",{size: 24}),
-        pos(40,110),
-        color(0,0,0)
-    ])
-    const gold_logo_speed = add([
-        circle(10),
-        pos(170, 125),
-        color(255, 255, 0),
-    ])
-    const gold_speed =  add([
-        text("5", {size: 25}),
-        pos(200, 126),
-        anchor("center"),
-        color(255, 255, 0),
-    ]);
-    gold_speed.text =  Math.pow(2, playerStats.speed / 5 - 2)
-
     let hp = add([
         rect(200, 30),
         color(242,255,230),
-        pos(20,150),
+        pos(20,110),
         "hp"
     ])
     let hp_text = add([
         text("HP(+5)",{size: 27}),
-        pos(40,150),
+        pos(40,110),
         color(0,0,0)
     ])
     const gold_logo_hp = add([
         circle(10),
-        pos(170, 165),
+        pos(170, 125),
         color(255, 255, 0),
     ])
     const gold_hp =  add([
         text("5", {size: 25}),
-        pos(200, 166),
+        pos(200, 126),
         anchor("center"),
         color(255, 255, 0),
     ]);
@@ -1096,25 +1029,92 @@ scene("shop", () => {
     })
 
     onKeyPress("enter", () => {
-        buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_hp, player_att_stat, player_def_stat, player_speed_stat, player_hp_stat, player_gold_stat)
+        buyStat(currentTab, playerStats, gold_att, gold_def, gold_hp, player_att_stat, player_def_stat, player_hp_stat, player_gold_stat)
     })
 
     onKeyPress("space", () => {
+        sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
         go("donjon")
     })
+
+
 })
+
+scene("start", () => {
+    //400x240
+    let starting_screen = add([
+        sprite("start", {width: width(), height: height()}),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        z(-1)
+    ]);
+
+    onKeyPress("space", () => {
+        go("house")
+    })
+})
+
+
+
+
+//Hide background when text appear
+function addDialog() {
+    const h = 160
+    const pad = 16
+    const bg = add([
+        pos(0, height() - h),
+        rect(width(), h),
+        color(0, 0, 0),
+        z(100),
+    ])
+    const txt = add([
+        text("", {
+            width: width(),
+        }),
+        pos(0 + pad, height() - h + pad),
+        z(100),
+    ])
+    bg.hidden = true
+    txt.hidden = true
+    return {
+        say(t) {
+            txt.text = t
+            bg.hidden = false
+            txt.hidden = false
+        },
+        dismiss() {
+            if (!this.active()) {
+                return
+            }
+            txt.text = ""
+            bg.hidden = true
+            txt.hidden = true
+        },
+        active() {
+            return !bg.hidden
+        },
+        destroy() {
+            bg.destroy()
+            txt.destroy()
+        },
+    }
+}
+
+let hasKey = false
+	const dialog = addDialog()
+
 
 let playerStats = {
     att: 1,
     def: 1,
     speed: 10,
-    knockback: 20,
-    gold: 30,
+    knockback: 10,
+    gold: 10,
     max_health: 10
 }
 sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
-go('house')
+go('start')
 
 
 function check_movement(direction, player){
@@ -1428,7 +1428,7 @@ function addBat(position){
             att: 2,
             def: 3,
             speed: 4,
-            knockback: 5,
+            knockback: 1,
             drops: {
                 gold: 5
             },
@@ -1487,7 +1487,7 @@ function addSlime(position){
             att: 5,
             def: 2,
             speed: 2,
-            knockback: 5,
+            knockback: 1,
             drops: {
                 gold: 5
             },
@@ -1667,7 +1667,7 @@ function menuHighlight(previousTabTag, currentTabTag){
     currentTab[0].color = rgb(255,102,102)
 }
 
-function buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_hp, player_att_stat, player_def_stat, player_speed_stat, player_hp_stat, player_gold_stat){
+function buyStat(currentTab, playerStats, gold_att, gold_def, gold_hp, player_att_stat, player_def_stat, player_hp_stat, player_gold_stat){
     if(currentTab == 0){
         //check gold
         price = Math.pow(2, playerStats.att - 1)
@@ -1719,31 +1719,6 @@ function buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_h
         }
     }
     else if(currentTab == 2){
-        //check gold
-        price = Math.pow(2, playerStats.speed / 5 - 2)
-        if(playerStats.gold >= price){
-            if(price > 999){
-                playerStats.gold -= 999         
-            }
-            else{
-                playerStats.gold -= price
-            }
-            playerStats.speed += 5
-            future_price = Math.pow(2, playerStats.speed / 5 - 2)
-            if(future_price > 999){
-                gold_speed.text = 999         
-            }
-            else{
-                gold_speed.text = future_price
-            }
-            player_speed_stat.text = playerStats.speed
-            player_gold_stat.text = playerStats.gold
-        }
-        else{
-            notEnoughGold()
-        }
-    }
-    else if(currentTab == 3){
         //check gold
         price = Math.pow(2, playerStats.max_health / 5 - 2)
         if(playerStats.gold >= price){
