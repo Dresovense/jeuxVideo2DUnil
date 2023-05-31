@@ -1,5 +1,3 @@
-
-
 kaboom({
     width: 400,
     height: 240,
@@ -206,7 +204,10 @@ scene("donjon", () => {
                 shape: new Rect(vec2(0), 60, 50),
             }),
             z(1),
-            "sword"
+            "sword",
+            {
+                touchesWall: false
+            }
         ])
         let background_position = player.pos
         let swordUsed = false
@@ -214,7 +215,9 @@ scene("donjon", () => {
         //add controls and animations
         onKeyDown("right", () => {
             player.move(RIGHT.scale(player.speed * 10))
-            sword.move(RIGHT.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(RIGHT.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -229,7 +232,9 @@ scene("donjon", () => {
 
         onKeyDown("left", () => {
             player.move(LEFT.scale(player.speed * 10))
-            sword.move(LEFT.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(LEFT.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -244,7 +249,9 @@ scene("donjon", () => {
 
         onKeyDown("up", () => {
             player.move(UP.scale(player.speed * 10))
-            sword.move(UP.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(UP.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -259,7 +266,9 @@ scene("donjon", () => {
 
         onKeyDown("down", () => {
             player.move(DOWN.scale(player.speed * 10))
-            sword.move(DOWN.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(DOWN.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -275,16 +284,13 @@ scene("donjon", () => {
         onKeyPress("space", () => {
             if(swordUsed == false){
                 swordUsed = true
-                console.log(lastKnownDirection)
                 if(lastKnownDirection.y == -1){
-                    console.log("UP")
                     sword.angle = 0
                     sword.pos.x += 3
                     sword.pos.y -= 5
                     sword.z = 0
                 }
                 else if(lastKnownDirection.y == 1){
-                    console.log("DOWN")
                     sword.angle = 180
                     sword.pos.x -= 5
                     sword.pos.y += 17
@@ -292,14 +298,12 @@ scene("donjon", () => {
                 }
                 else{
                     if(lastKnownDirection.x == 1){
-                        console.log("RIGHT")
                         sword.angle = 90
                         sword.pos.x += 10
                         sword.pos.y += 8  
                         sword.z = 1
                     }
                     else if(lastKnownDirection.x == -1){
-                        console.log("LEFT")
                         sword.angle = 270
                         sword.pos.x -= 10
                         sword.pos.y += 8  
@@ -315,6 +319,14 @@ scene("donjon", () => {
                     swordUsed = false
                 })
             }
+        })
+
+        onCollide("sword","wall", (sword) => {
+            sword.touchesWall = true
+        })
+
+        onCollideEnd("sword", "wall", (sword) => {
+            sword.touchesWall = false
         })
   
     //background moves with the player
@@ -346,16 +358,8 @@ scene("donjon", () => {
         }
         modifiedCode.push(modifiedLine);
     }
-    for (let i = 0; i < modifiedCode.length; i++) {
-      console.log(modifiedCode[i]);
-}
-for (let i = 0; i < code.length; i++) {
-    console.log(code[i]);
-}
-console.log(code.length,  modifiedCode.length)
 
-
-    addLevel(modifiedCode,{
+        addLevel(modifiedCode,{
         tileWidth: 24,
         tileHeight: 24,
         tiles: {
@@ -365,6 +369,7 @@ console.log(code.length,  modifiedCode.length)
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
+                "wall",
             ],
             "X": () => [
                 sprite("wall_top"),
@@ -372,11 +377,12 @@ console.log(code.length,  modifiedCode.length)
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
+                "wall",
             ]
         }
-    })
+        })
 
-        addSlime((400,400))
+        spawnEnnemies(4,3)
         enemyBehavior(player, sword); 
 
 
@@ -410,7 +416,10 @@ console.log(code.length,  modifiedCode.length)
             if(player.hp() > 0){
                 damagePopup(damage, player)
             }
-            console.log(player.hp())
+        })
+
+        onCollide("damage", "wall", (projectile) => {
+            destroy(projectile)
         })
 
         goldCollision()
@@ -418,6 +427,7 @@ console.log(code.length,  modifiedCode.length)
 
     //add UI
         addUI(player);  
+
 })
 
 scene("shop", () => {
@@ -632,7 +642,7 @@ let playerStats = {
 }
 sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
-go('shop')
+go('donjon')
 
 function check_movement(direction, player){
     if(direction.y == 1){
@@ -709,7 +719,6 @@ function taking_damage(monster, player){
     if(player.hp() > 0){
         damagePopup(damage, player)
     }
-    console.log(player.hp())
     
 }
 
@@ -727,7 +736,6 @@ function taking_damage_monster(monster, player){
     if(monster.hp() > 0){
         damagePopup(damage, monster)
     }
-    console.log(monster.hp())
 }
 
 function damagePopup(damage, entity){
@@ -842,7 +850,6 @@ function addUI(player){
         fixed(),
         z(50),
     ]);
-    console.log(player.max_health)
     onUpdate(() => {
         // Update health bar
         const maxHp = player.max_health;
@@ -926,6 +933,7 @@ function map_generator(){
       }
     }
 }
+
 function addBat(position){
 //add enemy bat
     bat = add([
@@ -938,6 +946,7 @@ function addBat(position){
         }),
         scale(0.35),
         z(1),
+        body(),
         "bat",
         "monster",
         health(10),
@@ -946,7 +955,7 @@ function addBat(position){
             att: 10,
             def: 10,
             speed: 4,
-            knockback: 20,
+            knockback: 5,
             drops: {
                 gold: 5
             },
@@ -955,61 +964,64 @@ function addBat(position){
     ]);
     
     // Set the enemy's behavior to run continuously
-        loop(randi(1,3), () => {
+    loop(randi(1,3), () => {
+        let directions = [RIGHT, LEFT, UP, DOWN]
+        bat.direction = bat.direction.add(directions[randi(4)]).unit()
+        if(bat.direction.x == 0 && bat.direction.y == 0){
             let directions = [RIGHT, LEFT, UP, DOWN]
             bat.direction = bat.direction.add(directions[randi(4)]).unit()
-            if(bat.direction.x == 0 && bat.direction.y == 0){
-                let directions = [RIGHT, LEFT, UP, DOWN]
-                bat.direction = bat.direction.add(directions[randi(4)]).unit()
-            }
+        }
 
-            //anims
-            if(Math.abs(bat.direction.x) > Math.abs(bat.direction.y)){
-                if(bat.direction.x > 0){
-                    bat.play("right")
-                }
-                else{
-                    bat.play("left")
-                }
+        //anims
+        if(Math.abs(bat.direction.x) > Math.abs(bat.direction.y)){
+            if(bat.direction.x > 0){
+                bat.play("right")
             }
             else{
-                if(bat.direction.y < 0){
-                    bat.play("up")
-                }
-                else{
-                    bat.play("down")
-                }
+                bat.play("left")
             }
-        })
+        }
+        else{
+            if(bat.direction.y < 0){
+                bat.play("up")
+            }
+            else{
+                bat.play("down")
+            }
+        }
+    })
+    return bat
 }
 
 function addSlime(position){
-    //add enemy bat
-        slime = add([
-            sprite("slime", {anim: "idle_up"}),
-            pos(position),
-            anchor("center"),
-            area({
-                shape: new Rect(vec2(0), 32, 32),
-                offset: vec2(0, 12),
-            }),
-            scale(0.4),
-            z(1),
-            "slime",
-            "monster",
-            health(10),
-            {
-                direction: RIGHT,
-                att: 10,
-                def: 10,
-                speed: 2,
-                knockback: 20,
-                drops: {
-                    gold: 5
-                },
-                moving: false
-            }
-        ]);
+    //add enemy slime
+    slime = add([
+        sprite("slime", {anim: "idle_up"}),
+        pos(position),
+        anchor("center"),
+        area({
+            shape: new Rect(vec2(0), 32, 32),
+            offset: vec2(0, 12),
+        }),
+        scale(0.4),
+        z(1),
+        "slime",
+        "monster",
+        body(),
+        health(10),
+        {
+            direction: RIGHT,
+            att: 10,
+            def: 10,
+            speed: 2,
+            knockback: 5,
+            drops: {
+                gold: 5
+            },
+            moving: false
+        }
+    ]);
+    return slime
 }
 
 function enemyBehavior(player){
@@ -1121,7 +1133,6 @@ function slimeBehavior(player){
         loop(2, () => {
             if(slime.hp() > 0){
                 let distance_player_slime = vec2(slime.pos).sub(player.pos).len();
-                console.log(distance_player_slime)
                 if(distance_player_slime < 150){
                     let projectile = add([
                         circle(5),
@@ -1129,7 +1140,7 @@ function slimeBehavior(player){
                         anchor("center"),
                         area(),
                         z(1),
-                        color(41,207,207),
+                        color(132,222,2),
                         "projectile",
                         "damage",
                         {
@@ -1147,7 +1158,7 @@ function slimeBehavior(player){
                                 pos(projectile.pos),
                                 anchor("center"),
                                 area(),
-                                color(41,207,255),
+                                color(132,222,2),
                                 "splash",
                                 "damage",
                                 {
@@ -1284,7 +1295,6 @@ function buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_h
             notEnoughGold()
         }
     }
-    console.log(playerStats)
 }
 
 function notEnoughGold(){
@@ -1304,4 +1314,37 @@ function notEnoughGold(){
         color(0,0,0),
         lifespan(0.5)
     ])
+}
+
+function spawnEnnemies(numberOfBats, numberOfSlimes){
+ //0,0 à 770, 810
+    for(let i = 0; i < numberOfBats; i++){
+        monsterCreated = false
+        while(monsterCreated == false){
+            let pos = vec2(rand(770), rand(810))
+            let bat = addBat(pos)
+            let colisionEvent = bat.onCollide("*", (bat) => {
+                destroy(bat)
+            })
+            if(bat != NaN){
+                monsterCreated = true
+                colisionEvent.cancel()
+            }
+        }
+    }
+
+    for(let i = 0; i < numberOfSlimes; i++){
+        monsterCreated = false
+        while(monsterCreated == false){
+            let pos = vec2(rand(770), rand(810))
+            let slime = addSlime(pos)
+            let colisionEvent = slime.onCollide("*", (slime) => {
+                destroy(slime)
+            })
+            if(slime != NaN){
+                monsterCreated = true
+                colisionEvent.cancel()
+            }
+        }
+    }
 }
