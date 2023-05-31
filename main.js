@@ -842,6 +842,9 @@ scene("donjon", () => {
 })
 
 
+go('house')
+
+
 //Hide background when text appear
 function addDialog() {
     const h = 160
