@@ -541,18 +541,18 @@ scene("house", () => {
                 scale(0.5),
                 area(),
             ],
-            /* "R": () => [
+            "R": () => [
                 sprite("exit_house"),
                 anchor("center"),
                 scale(0.5),
                 area(),
                 body({isStatic:true}),
                 "house_door"
-            ] */
+            ]
         },
         
         //Code pris de Kaboom pour le "dialogue"
-        wildcardTile(ch) {
+        /* wildcardTile(ch) {
 			const char = characters[ch]
 			if (char) {
 				return [
@@ -565,7 +565,7 @@ scene("house", () => {
 					{ msg: char.msg },
 				]
 			}
-		},
+		}, */
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
