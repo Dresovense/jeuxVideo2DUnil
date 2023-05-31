@@ -567,7 +567,7 @@ scene("house", () => {
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
-            go("donjon")
+            go("shop")
     })
     //})
     
@@ -888,10 +888,6 @@ scene("donjon", () => {
 
 })
 
-
-go('house')
-
-
 //Hide background when text appear
 function addDialog() {
     const h = 160
@@ -1150,7 +1146,7 @@ let playerStats = {
 }
 sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
-go('donjon')
+go('house')
 
 
 function check_movement(direction, player){
