@@ -371,52 +371,6 @@ scene("house", () => {
         lastKnownDirection = check_movement(direction, player)
     })
 
-    //Press space to pass the door ? Test en cours
-    onKeyPress("space", () => {
-        /* if(swordUsed == false){
-            swordUsed = true
-            console.log(lastKnownDirection)
-            if(lastKnownDirection.y == -1){
-                console.log("UP")
-                sword.angle = 0
-                sword.pos.x += 3
-                sword.pos.y -= 5
-                sword.z = 0
-            }
-            else if(lastKnownDirection.y == 1){
-                console.log("DOWN")
-                sword.angle = 180
-                sword.pos.x -= 5
-                sword.pos.y += 17
-                sword.z = 1
-            }
-            else{
-                if(lastKnownDirection.x == 1){
-                    console.log("RIGHT")
-                    sword.angle = 90
-                    sword.pos.x += 10
-                    sword.pos.y += 8  
-                    sword.z = 1
-                }
-                else if(lastKnownDirection.x == -1){
-                    console.log("LEFT")
-                    sword.angle = 270
-                    sword.pos.x -= 10
-                    sword.pos.y += 8  
-                    sword.z = 0
-                }
-            }
-            sword.opacity = 1
-            sword.play("slash")
-            wait(0.3, () => {
-                sword.opacity = 0
-                sword.pos.x = player.pos.x
-                sword.pos.y = player.pos.y
-                swordUsed = false
-            })
-        } */
-    })
-
     //background moves with the player
     let background = add([
         sprite("house_ground", {width: width(), height: height()}),
@@ -567,9 +521,8 @@ scene("house", () => {
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
-            go("donjon")
+            go("shop")
     })
-    //})
     
 })
 })
@@ -889,9 +842,6 @@ scene("donjon", () => {
 })
 
 
-go('house')
-
-
 //Hide background when text appear
 function addDialog() {
     const h = 160
@@ -1145,12 +1095,12 @@ let playerStats = {
     def: 1,
     speed: 10,
     knockback: 20,
-    gold: 0,
+    gold: 30,
     max_health: 10
 }
 sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
-go('donjon')
+go('house')
 
 
 function check_movement(direction, player){
