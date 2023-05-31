@@ -57,6 +57,141 @@ loadSpriteAtlas("sprites/tilesets/Dungeon_A4.png", {
     }
 })
 
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "chair":{
+        x: 0,
+        y: 624,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A2.png", {
+    "table":{
+        x: 672,
+        y: 0,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "kitchen1":{
+        x: 0,
+        y: 672,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "kitchen2":{
+        x: 48,
+        y: 672,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "kitchen3":{
+        x: 144,
+        y: 672,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed1":{
+        x: 48,
+        y: 480,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed2":{
+        x: 96,
+        y: 480,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed3":{
+        x: 48,
+        y: 524,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_B.png", {
+    "bed4":{
+        x: 96,
+        y: 524,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_insidetop":{
+        x: 96,
+        y: 336,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_inside1":{
+        x: 288,
+        y: 432,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_inside2":{
+        x: 0,
+        y: 432,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A4.png", {
+    "wall_inside3":{
+        x: 0,
+        y: 384,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Inside_A5.png", {
+    "black_void":{
+        x: 0,
+        y: 0,
+        height: 48,
+        width: 48,
+    }
+})
+
+loadSpriteAtlas("sprites/tilesets/Door1.png", {
+    "exit_house":{
+        x: 0,
+        y: 192,
+        height: 48,
+        width: 48,
+    }
+})
+
 loadSprite("top_right_wall", "sprites/background/top_right_wall.png")
 loadSprite("top_left_wall", "sprites/background/top_left_wall.png")
 loadSprite("bottom_right_wall", "sprites/background/bottom_right_wall.png")
@@ -66,6 +201,7 @@ loadSprite("inbetween_wall_front", "sprites/background/inbetween_wall_front.png"
 
 
 loadSprite("ground", "sprites/background/crystal_tile.png")
+loadSprite("house_ground", "sprites/background/house_background3.png")
 
 
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
@@ -121,6 +257,322 @@ loadSpriteAtlas("sprites/objects/sword.png", {
     }
 })
   
+scene("house", () => {
+    //Create player, movement, and level
+    let direction = vec2(0,0)    //changer selon la position de départ
+    let lastKnownDirection = vec2(0,0)
+    
+    //Chatbox door house test
+    const characters = {
+		"R": {
+			sprite: "exit_house",
+			msg: "Est-ce que tu veux sortir de la maison ?",
+		},
+		
+	}
+    
+
+    //add player sprite
+    let player = add([
+        sprite("player", {anim: "idle_up"}),
+        pos(250,250),
+        anchor("center"),
+        area({
+            shape: new Rect(vec2(0), 32, 32),
+            offset: vec2(0, 12),
+        }),
+        scale(0.5),
+        z(1),
+        body(),
+        "player",
+        health(50),
+        {
+            att: 15,
+            def: 10,
+            speed: 100,
+            knockback: 20,
+            gold: 0,
+            max_health: 50
+        }
+    ]);
+    sword = add([
+        sprite("sword", {anim: "idle"}),
+        pos(player.pos.x, player.pos.y),
+        opacity(0),
+        anchor("center"),
+        scale(0.4),
+        area({
+            shape: new Rect(vec2(0), 60, 50),
+        }),
+        z(1),
+        "sword"
+    ])
+    let background_position = player.pos
+    let swordUsed = false
+    camPos(player.pos)
+    //add controls and animations
+    onKeyDown("right", () => {
+        player.move(RIGHT.scale(player.speed))
+        sword.move(RIGHT.scale(player.speed))
+        camPos(player.pos)
+        //background_position = background_following(player, background, background_position)
+    })
+    onKeyPress("right", () => {
+        direction = direction.add(RIGHT)
+        lastKnownDirection = check_movement(direction, player)
+    })
+    onKeyRelease("right", () => {
+        direction = direction.sub(RIGHT)
+        lastKnownDirection = check_movement(direction, player)
+    })
+
+    onKeyDown("left", () => {
+        player.move(LEFT.scale(player.speed))
+        sword.move(LEFT.scale(player.speed))
+        camPos(player.pos)
+        //background_position = background_following(player, background, background_position)
+    })
+    onKeyPress("left", () => {
+        direction = direction.add(LEFT)
+        lastKnownDirection = check_movement(direction, player)
+    })
+    onKeyRelease("left", () => {
+        direction = direction.sub(LEFT)
+        lastKnownDirection = check_movement(direction, player)
+    })
+
+    onKeyDown("up", () => {
+        player.move(UP.scale(player.speed))
+        sword.move(UP.scale(player.speed))
+        camPos(player.pos)
+        //background_position = background_following(player, background, background_position)
+    })
+    onKeyPress("up", () => {
+        direction = direction.add(UP)
+        lastKnownDirection = check_movement(direction, player)
+    })
+    onKeyRelease("up", () => {
+        direction = direction.sub(UP)
+        lastKnownDirection = check_movement(direction, player)
+    })
+
+    onKeyDown("down", () => {
+        player.move(DOWN.scale(player.speed))
+        sword.move(DOWN.scale(player.speed))
+        camPos(player.pos)
+        //background_position = background_following(player, background, background_position)
+    })
+    onKeyPress("down", () => {
+        direction = direction.add(DOWN)
+        lastKnownDirection = check_movement(direction, player)
+    })
+    onKeyRelease("down", () => {
+        direction = direction.sub(DOWN)
+        lastKnownDirection = check_movement(direction, player)
+    })
+
+    //Press space to pass the door ? Test en cours
+    onKeyPress("space", () => {
+        /* if(swordUsed == false){
+            swordUsed = true
+            console.log(lastKnownDirection)
+            if(lastKnownDirection.y == -1){
+                console.log("UP")
+                sword.angle = 0
+                sword.pos.x += 3
+                sword.pos.y -= 5
+                sword.z = 0
+            }
+            else if(lastKnownDirection.y == 1){
+                console.log("DOWN")
+                sword.angle = 180
+                sword.pos.x -= 5
+                sword.pos.y += 17
+                sword.z = 1
+            }
+            else{
+                if(lastKnownDirection.x == 1){
+                    console.log("RIGHT")
+                    sword.angle = 90
+                    sword.pos.x += 10
+                    sword.pos.y += 8  
+                    sword.z = 1
+                }
+                else if(lastKnownDirection.x == -1){
+                    console.log("LEFT")
+                    sword.angle = 270
+                    sword.pos.x -= 10
+                    sword.pos.y += 8  
+                    sword.z = 0
+                }
+            }
+            sword.opacity = 1
+            sword.play("slash")
+            wait(0.3, () => {
+                sword.opacity = 0
+                sword.pos.x = player.pos.x
+                sword.pos.y = player.pos.y
+                swordUsed = false
+            })
+        } */
+    })
+
+    //background moves with the player
+    let background = add([
+        sprite("house_ground", {width: width(), height: height()}),
+        pos(350,190),
+        anchor("center"),
+        scale(1),
+        z(-1)
+    ]);
+    addLevel(export_house(),{
+        tileWidth: 24,
+        tileHeight: 24,
+        tiles: {
+            "Y": () => [
+                sprite("wall"),
+                anchor("center"),
+                scale(0.25),
+                area(),
+                body({isStatic:true}),
+            ],
+            "X": () => [
+                sprite("wall_top"),
+                anchor("center"),
+                scale(0.25),
+                area(),
+                body({isStatic:true}),
+            ],
+            "E": () => [
+                sprite("wall_insidetop"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "F": () => [
+                sprite("wall_inside1"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "G": () => [
+                sprite("bed1"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "H": () => [
+                sprite("bed2"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "I": () => [
+                sprite("bed3"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "J": () => [
+                sprite("bed4"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "K": () => [
+                sprite("wall_inside3"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "Q": () => [
+                sprite("wall_inside2"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "L": () => [
+                sprite("table"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "M": () => [
+                sprite("kitchen1"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "N": () => [
+                sprite("kitchen2"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "O": () => [
+                sprite("kitchen3"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+            ],
+            "P": () => [
+                sprite("chair"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+            ],
+            "V": () => [
+                sprite("black_void"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+            ],
+            "R": () => [
+                sprite("exit_house"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                body({isStatic:true}),
+                "house_door"
+            ]
+        },
+        
+        //Code pris de Kaboom pour le "dialogue"
+        /* wildcardTile(ch) {
+			const char = characters[ch]
+			if (char) {
+				return [
+					sprite(char.sprite),
+					area(),
+					body({ isStatic: true }),
+					anchor("center"),
+					"character",
+                    scale(0.5),
+					{ msg: char.msg },
+				]
+			}
+		}, */
+    })
+    onCollide("house_door", "player", () => {
+        onKeyPress("space", () => {
+            go("donjon")
+    })
+    //})
+    
+})
+})
 
 scene("donjon", () => {
     //Add around the map walls
@@ -172,6 +624,7 @@ scene("donjon", () => {
         anchor("center"),
         scale(0.25)
     ]);
+
     //Create player, movement, and level
         let direction = vec2(0,0)    //changer selon la position de départ
         let lastKnownDirection = vec2(0,0)
@@ -181,7 +634,7 @@ scene("donjon", () => {
         //add player sprite
         let player = add([
             sprite("player", {anim: "idle_up"}),
-            pos(500,500),
+            pos(35,25),
             anchor("center"),
             area({
                 shape: new Rect(vec2(0), 32, 32),
@@ -377,10 +830,15 @@ scene("donjon", () => {
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
-                "wall",
+            "wall",
             ]
         }
         })
+        //Potion de retour pour MJ
+        onKeyPress("p", () => {
+          go("house")
+    })
+
 
         spawnEnnemies(4,3)
         enemyBehavior(player, sword); 
@@ -429,6 +887,56 @@ scene("donjon", () => {
         addUI(player);  
 
 })
+
+
+go('house')
+
+
+//Hide background when text appear
+function addDialog() {
+    const h = 160
+    const pad = 16
+    const bg = add([
+        pos(0, height() - h),
+        rect(width(), h),
+        color(0, 0, 0),
+        z(100),
+    ])
+    const txt = add([
+        text("", {
+            width: width(),
+        }),
+        pos(0 + pad, height() - h + pad),
+        z(100),
+    ])
+    bg.hidden = true
+    txt.hidden = true
+    return {
+        say(t) {
+            txt.text = t
+            bg.hidden = false
+            txt.hidden = false
+        },
+        dismiss() {
+            if (!this.active()) {
+                return
+            }
+            txt.text = ""
+            bg.hidden = true
+            txt.hidden = true
+        },
+        active() {
+            return !bg.hidden
+        },
+        destroy() {
+            bg.destroy()
+            txt.destroy()
+        },
+    }
+}
+
+let hasKey = false
+	const dialog = addDialog()
 
 scene("shop", () => {
     let playerStats = JSON.parse(sessionStorage.getItem("playerStats"))
@@ -643,6 +1151,7 @@ let playerStats = {
 sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
 go('donjon')
+
 
 function check_movement(direction, player){
     if(direction.y == 1){
