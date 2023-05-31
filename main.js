@@ -1,5 +1,3 @@
-
-
 kaboom({
     width: 400,
     height: 240,
@@ -23,10 +21,10 @@ loadSpriteAtlas("sprites/characters/yasuna1.png", {
             left: {from: 12, to: 14, loop: true},
             down: {from: 0, to: 2, loop: true},
             right: {from: 24, to: 26, loop: true},
-            idle_up: {from: 36, to: 36, loop: true},
-            idle_down: {from: 0, to: 0, loop: true},
-            idle_left: {from: 12, to: 12, loop: true},
-            idle_right: {from: 24, to: 24, loop: true}
+            idle_up: {from: 37, to: 37, loop: true},
+            idle_down: {from: 1, to: 1, loop: true},
+            idle_left: {from: 13, to: 13, loop: true},
+            idle_right: {from: 25, to: 25, loop: true}
         }
     }
 })
@@ -630,6 +628,8 @@ scene("donjon", () => {
     //Create player, movement, and level
         let direction = vec2(0,0)    //changer selon la position de départ
         let lastKnownDirection = vec2(0,0)
+
+        let playerStats = JSON.parse(sessionStorage.getItem("playerStats"))
         
         //add player sprite
         let player = add([
@@ -644,15 +644,8 @@ scene("donjon", () => {
             z(1),
             body(),
             "player",
-            health(50),
-            {
-                att: 15,
-                def: 10,
-                speed: 100,
-                knockback: 20,
-                gold: 0,
-                max_health: 50
-            }
+            health(playerStats.max_health),
+            playerStats
         ]);
         sword = add([
             sprite("sword", {anim: "idle"}),
@@ -664,15 +657,20 @@ scene("donjon", () => {
                 shape: new Rect(vec2(0), 60, 50),
             }),
             z(1),
-            "sword"
+            "sword",
+            {
+                touchesWall: false
+            }
         ])
         let background_position = player.pos
         let swordUsed = false
         camPos(player.pos)
         //add controls and animations
         onKeyDown("right", () => {
-            player.move(RIGHT.scale(player.speed))
-            sword.move(RIGHT.scale(player.speed))
+            player.move(RIGHT.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(RIGHT.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -686,8 +684,10 @@ scene("donjon", () => {
         })
 
         onKeyDown("left", () => {
-            player.move(LEFT.scale(player.speed))
-            sword.move(LEFT.scale(player.speed))
+            player.move(LEFT.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(LEFT.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -701,8 +701,10 @@ scene("donjon", () => {
         })
 
         onKeyDown("up", () => {
-            player.move(UP.scale(player.speed))
-            sword.move(UP.scale(player.speed))
+            player.move(UP.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(UP.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -716,8 +718,10 @@ scene("donjon", () => {
         })
 
         onKeyDown("down", () => {
-            player.move(DOWN.scale(player.speed))
-            sword.move(DOWN.scale(player.speed))
+            player.move(DOWN.scale(player.speed * 10))
+            if(sword.touchesWall == false){
+                sword.move(DOWN.scale(player.speed * 10))
+            }
             camPos(player.pos)
             background_position = background_following(player, background, background_position)
         })
@@ -733,16 +737,13 @@ scene("donjon", () => {
         onKeyPress("space", () => {
             if(swordUsed == false){
                 swordUsed = true
-                console.log(lastKnownDirection)
                 if(lastKnownDirection.y == -1){
-                    console.log("UP")
                     sword.angle = 0
                     sword.pos.x += 3
                     sword.pos.y -= 5
                     sword.z = 0
                 }
                 else if(lastKnownDirection.y == 1){
-                    console.log("DOWN")
                     sword.angle = 180
                     sword.pos.x -= 5
                     sword.pos.y += 17
@@ -750,14 +751,12 @@ scene("donjon", () => {
                 }
                 else{
                     if(lastKnownDirection.x == 1){
-                        console.log("RIGHT")
                         sword.angle = 90
                         sword.pos.x += 10
                         sword.pos.y += 8  
                         sword.z = 1
                     }
                     else if(lastKnownDirection.x == -1){
-                        console.log("LEFT")
                         sword.angle = 270
                         sword.pos.x -= 10
                         sword.pos.y += 8  
@@ -773,6 +772,14 @@ scene("donjon", () => {
                     swordUsed = false
                 })
             }
+        })
+
+        onCollide("sword","wall", (sword) => {
+            sword.touchesWall = true
+        })
+
+        onCollideEnd("sword", "wall", (sword) => {
+            sword.touchesWall = false
         })
   
     //background moves with the player
@@ -804,16 +811,8 @@ scene("donjon", () => {
         }
         modifiedCode.push(modifiedLine);
     }
-    for (let i = 0; i < modifiedCode.length; i++) {
-      console.log(modifiedCode[i]);
-}
-for (let i = 0; i < code.length; i++) {
-    console.log(code[i]);
-}
-console.log(code.length,  modifiedCode.length)
 
-
-    addLevel(modifiedCode,{
+        addLevel(modifiedCode,{
         tileWidth: 24,
         tileHeight: 24,
         tiles: {
@@ -823,6 +822,7 @@ console.log(code.length,  modifiedCode.length)
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
+                "wall",
             ],
             "X": () => [
                 sprite("wall_top"),
@@ -830,111 +830,17 @@ console.log(code.length,  modifiedCode.length)
                 scale(0.25),
                 area(),
                 body({isStatic:true}),
-            ],
-            "E": () => [
-                sprite("wall_insidetop"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "F": () => [
-                sprite("wall_inside1"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "G": () => [
-                sprite("bed1"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "H": () => [
-                sprite("bed2"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "I": () => [
-                sprite("bed3"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "J": () => [
-                sprite("bed4"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "K": () => [
-                sprite("wall_inside3"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "Q": () => [
-                sprite("wall_inside2"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "L": () => [
-                sprite("table"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "M": () => [
-                sprite("kitchen1"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "N": () => [
-                sprite("kitchen2"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "O": () => [
-                sprite("kitchen3"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-                body({isStatic:true}),
-            ],
-            "P": () => [
-                sprite("chair"),
-                anchor("center"),
-                scale(0.5),
-                area(),
-            ],
-            "V": () => [
-                sprite("black_void"),
-                anchor("center"),
-                scale(0.5),
-                area(),
+            "wall",
             ]
         }
-    })
-    //Potion de retour pour MJ
-    onKeyPress("p", () => {
-        go("house")
+        })
+        //Potion de retour pour MJ
+        onKeyPress("p", () => {
+          go("house")
     })
 
-        addSlime((400,400))
+
+        spawnEnnemies(4,3)
         enemyBehavior(player, sword); 
 
 
@@ -968,7 +874,10 @@ console.log(code.length,  modifiedCode.length)
             if(player.hp() > 0){
                 damagePopup(damage, player)
             }
-            console.log(player.hp())
+        })
+
+        onCollide("damage", "wall", (projectile) => {
+            destroy(projectile)
         })
 
         goldCollision()
@@ -976,7 +885,9 @@ console.log(code.length,  modifiedCode.length)
 
     //add UI
         addUI(player);  
+
 })
+
 
 go('house')
 
@@ -1026,6 +937,221 @@ function addDialog() {
 
 let hasKey = false
 	const dialog = addDialog()
+
+scene("shop", () => {
+    let playerStats = JSON.parse(sessionStorage.getItem("playerStats"))
+
+    let order = ["att","def","speed", "hp"]
+    let currentTab = 0
+
+    let background = add([
+        rect(width(), height()),
+        anchor("center"),
+        color(25,102,255),
+        scale(2.5),
+    ])
+
+    let playerSprite = add([
+        sprite("player", {anim: "idle_down"}),
+        pos(315, 80),
+        scale(2.5),
+        anchor("center"),
+    ])
+
+    let player_att_text = add([
+        text("ATT:", {size: 15}),
+        pos(250, 150),
+        color(0,0,0)
+    ])
+    let player_att_stat = add([
+        text(playerStats.att, {size: 15}),
+        pos(290, 150),
+        color(0,0,0)
+    ])
+
+    let player_def_text = add([
+        text("DEF:", {size: 15}),
+        pos(320, 150),
+        color(0,0,0)
+    ])
+    let player_def_stat = add([
+        text(playerStats.def, {size: 15}),
+        pos(360, 150),
+        color(0,0,0)
+    ])
+
+    let player_speed_text = add([
+        text("VIT:", {size: 15}),
+        pos(250, 170),
+        color(0,0,0)
+    ])
+    let player_speed_stat = add([
+        text(playerStats.speed, {size: 15}),
+        pos(290, 170),
+        color(0,0,0)
+    ])
+
+    let player_hp_text = add([
+        text("HP:", {size: 15}),
+        pos(320, 170),
+        color(0,0,0)
+    ])
+    let player_hp_stat = add([
+        text(playerStats.max_health, {size: 15}),
+        pos(360, 170),
+        color(0,0,0)
+    ])
+
+    let player_gold_text = add([
+        text("Or disponible:", {size: 25}),
+        color(255, 215, 0),
+        pos(70,200)
+    ])
+    let player_gold_stat = add([
+        text(playerStats.gold, {size: 25}),
+        color(255, 215, 0),
+        pos(300,200)
+    ])
+
+
+
+
+
+    let att = add([
+        rect(200, 30),
+        color(255,102,102),
+        pos(20,30),
+        "att"
+    ])
+    let att_text = add([
+        text("ATT"),
+        pos(40,30),
+        color(0,0,0)
+    ])
+    const gold_logo_att = add([
+        circle(10),
+        pos(170, 45),
+        color(255, 255, 0),
+    ])
+    const gold_att =  add([
+        text("1", {size: 25}),
+        pos(200, 46),
+        anchor("center"),
+        color(255, 255, 0),
+    ]);
+    gold_att.text =  Math.pow(2, playerStats.att - 1)
+
+    let def = add([
+        rect(200, 30),
+        color(242,255,230),
+        pos(20,70),
+        "def"
+    ])
+    let def_text = add([
+        text("DEF"),
+        pos(40,70),
+        color(0,0,0)
+    ])
+    const gold_logo_def = add([
+        circle(10),
+        pos(170, 85),
+        color(255, 255, 0),
+    ])
+    const gold_def =  add([
+        text("5", {size: 25}),
+        pos(200, 86),
+        anchor("center"),
+        color(255, 255, 0),
+    ]);
+    gold_def.text =  Math.pow(2, playerStats.def - 1)
+
+    let speed = add([
+        rect(200, 30),
+        color(242,255,230),
+        pos(20,110),
+        "speed"
+    ])
+    let speed_text = add([
+        text("VIT(+5)",{size: 24}),
+        pos(40,110),
+        color(0,0,0)
+    ])
+    const gold_logo_speed = add([
+        circle(10),
+        pos(170, 125),
+        color(255, 255, 0),
+    ])
+    const gold_speed =  add([
+        text("5", {size: 25}),
+        pos(200, 126),
+        anchor("center"),
+        color(255, 255, 0),
+    ]);
+    gold_speed.text =  Math.pow(2, playerStats.speed / 5 - 2)
+
+    let hp = add([
+        rect(200, 30),
+        color(242,255,230),
+        pos(20,150),
+        "hp"
+    ])
+    let hp_text = add([
+        text("HP(+5)",{size: 27}),
+        pos(40,150),
+        color(0,0,0)
+    ])
+    const gold_logo_hp = add([
+        circle(10),
+        pos(170, 165),
+        color(255, 255, 0),
+    ])
+    const gold_hp =  add([
+        text("5", {size: 25}),
+        pos(200, 166),
+        anchor("center"),
+        color(255, 255, 0),
+    ]);
+    gold_hp.text =  Math.pow(2, playerStats.max_health / 5 - 2)
+
+    onKeyPress("down", () => {
+        if(currentTab == order.length - 1){
+            menuHighlight(order[currentTab], order[0])
+            currentTab = 0;
+        }
+        else{
+            menuHighlight(order[currentTab], order[currentTab + 1])
+            currentTab++
+        }
+    })
+
+    onKeyPress("up", () => {
+        if(currentTab == 0){
+            menuHighlight(order[currentTab], order[order.length - 1])
+            currentTab = order.length - 1;
+        }
+        else{
+            menuHighlight(order[currentTab], order[currentTab - 1])
+            currentTab--
+        }
+    })
+
+    onKeyPress("enter", () => {
+        buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_hp, player_att_stat, player_def_stat, player_speed_stat, player_hp_stat, player_gold_stat)
+    })
+})
+
+let playerStats = {
+    att: 1,
+    def: 1,
+    speed: 10,
+    knockback: 20,
+    gold: 0,
+    max_health: 10
+}
+sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
+
+go('donjon')
+
 
 function check_movement(direction, player){
     if(direction.y == 1){
@@ -1102,7 +1228,6 @@ function taking_damage(monster, player){
     if(player.hp() > 0){
         damagePopup(damage, player)
     }
-    console.log(player.hp())
     
 }
 
@@ -1120,7 +1245,6 @@ function taking_damage_monster(monster, player){
     if(monster.hp() > 0){
         damagePopup(damage, monster)
     }
-    console.log(monster.hp())
 }
 
 function damagePopup(damage, entity){
@@ -1318,6 +1442,7 @@ function map_generator(){
       }
     }
 }
+
 function addBat(position){
 //add enemy bat
     bat = add([
@@ -1330,6 +1455,7 @@ function addBat(position){
         }),
         scale(0.35),
         z(1),
+        body(),
         "bat",
         "monster",
         health(10),
@@ -1337,8 +1463,8 @@ function addBat(position){
             direction: RIGHT,
             att: 10,
             def: 10,
-            speed: 40,
-            knockback: 20,
+            speed: 4,
+            knockback: 5,
             drops: {
                 gold: 5
             },
@@ -1347,61 +1473,64 @@ function addBat(position){
     ]);
     
     // Set the enemy's behavior to run continuously
-        loop(randi(1,3), () => {
+    loop(randi(1,3), () => {
+        let directions = [RIGHT, LEFT, UP, DOWN]
+        bat.direction = bat.direction.add(directions[randi(4)]).unit()
+        if(bat.direction.x == 0 && bat.direction.y == 0){
             let directions = [RIGHT, LEFT, UP, DOWN]
             bat.direction = bat.direction.add(directions[randi(4)]).unit()
-            if(bat.direction.x == 0 && bat.direction.y == 0){
-                let directions = [RIGHT, LEFT, UP, DOWN]
-                bat.direction = bat.direction.add(directions[randi(4)]).unit()
-            }
+        }
 
-            //anims
-            if(Math.abs(bat.direction.x) > Math.abs(bat.direction.y)){
-                if(bat.direction.x > 0){
-                    bat.play("right")
-                }
-                else{
-                    bat.play("left")
-                }
+        //anims
+        if(Math.abs(bat.direction.x) > Math.abs(bat.direction.y)){
+            if(bat.direction.x > 0){
+                bat.play("right")
             }
             else{
-                if(bat.direction.y < 0){
-                    bat.play("up")
-                }
-                else{
-                    bat.play("down")
-                }
+                bat.play("left")
             }
-        })
+        }
+        else{
+            if(bat.direction.y < 0){
+                bat.play("up")
+            }
+            else{
+                bat.play("down")
+            }
+        }
+    })
+    return bat
 }
 
 function addSlime(position){
-    //add enemy bat
-        slime = add([
-            sprite("slime", {anim: "idle_up"}),
-            pos(position),
-            anchor("center"),
-            area({
-                shape: new Rect(vec2(0), 32, 32),
-                offset: vec2(0, 12),
-            }),
-            scale(0.4),
-            z(1),
-            "slime",
-            "monster",
-            health(10),
-            {
-                direction: RIGHT,
-                att: 10,
-                def: 10,
-                speed: 20,
-                knockback: 20,
-                drops: {
-                    gold: 5
-                },
-                moving: false
-            }
-        ]);
+    //add enemy slime
+    slime = add([
+        sprite("slime", {anim: "idle_up"}),
+        pos(position),
+        anchor("center"),
+        area({
+            shape: new Rect(vec2(0), 32, 32),
+            offset: vec2(0, 12),
+        }),
+        scale(0.4),
+        z(1),
+        "slime",
+        "monster",
+        body(),
+        health(10),
+        {
+            direction: RIGHT,
+            att: 10,
+            def: 10,
+            speed: 2,
+            knockback: 5,
+            drops: {
+                gold: 5
+            },
+            moving: false
+        }
+    ]);
+    return slime
 }
 
 function enemyBehavior(player){
@@ -1415,7 +1544,7 @@ function batBehavior(player){
     onUpdate("bat", (bat) => {
         let distance_player_bat = vec2(bat.pos).sub(player.pos).len();
         if(distance_player_bat < 100){
-            let direction = vec2(player.pos).sub(bat.pos).unit().scale(bat.speed + 30)
+            let direction = vec2(player.pos).sub(bat.pos).unit().scale(bat.speed * 10 + 30)
 
             //anims
             if(Math.abs(direction.x) > Math.abs(direction.y)){
@@ -1442,7 +1571,7 @@ function batBehavior(player){
 
         }
         else{
-            let movement = bat.direction.scale(bat.speed)
+            let movement = bat.direction.scale(bat.speed * 10)
             bat.move(movement)
         }
     })
@@ -1505,59 +1634,57 @@ function slimeBehavior(player){
         // Run script for 2 seconds
         onUpdate(() => {
             if(slime.moving == true){
-                let movement = slime.direction.scale(slime.speed)
+                let movement = slime.direction.scale(slime.speed * 10)
                 slime.move(movement)
             }
         })
-    }
-
-    //player in slight
-    loop(2, () => {
-        if(slime.hp() > 0){
-            let distance_player_slime = vec2(slime.pos).sub(player.pos).len();
-            console.log(distance_player_slime)
-            if(distance_player_slime < 150){
-                run = false;
-                let projectile = add([
-                    circle(5),
-                    pos(slime.pos),
-                    anchor("center"),
-                    area(),
-                    z(1),
-                    color(41,207,207),
-                    "projectile",
-                    "damage",
-                    {
-                        damage: slime.att
-                    }
-                ])
-                let direction = vec2(player.pos).sub(projectile.pos).unit().scale(60)
-                onUpdate(() => {
-                    projectile.move(direction)
-                })
-                wait(rand(1, 2), () => {
-                    if(projectile){
-                        let splash = add([
-                            circle(6),
-                            pos(projectile.pos),
-                            anchor("center"),
-                            area(),
-                            color(41,207,255),
-                            "splash",
-                            "damage",
-                            {
-                                damage: slime.att
-                            }
-                        ])
-                        destroy(projectile)
-                        wait(6, () => {
-                            destroy(splash)
-                        })
-                    }
-                })
+        //player in slight
+        loop(2, () => {
+            if(slime.hp() > 0){
+                let distance_player_slime = vec2(slime.pos).sub(player.pos).len();
+                if(distance_player_slime < 150){
+                    let projectile = add([
+                        circle(5),
+                        pos(slime.pos),
+                        anchor("center"),
+                        area(),
+                        z(1),
+                        color(132,222,2),
+                        "projectile",
+                        "damage",
+                        {
+                            damage: slime.att
+                        }
+                    ])
+                    let direction = vec2(player.pos).sub(projectile.pos).unit().scale(60)
+                    onUpdate(() => {
+                        projectile.move(direction)
+                    })
+                    wait(rand(1, 2), () => {
+                        if(projectile == true){
+                            let splash = add([
+                                circle(6),
+                                pos(projectile.pos),
+                                anchor("center"),
+                                area(),
+                                color(132,222,2),
+                                "splash",
+                                "damage",
+                                {
+                                    damage: slime.att
+                                }
+                            ])
+                            destroy(projectile)
+                            wait(6, () => {
+                                destroy(splash)
+                            })
+                        }
+                    })
+                }
             }
-        }
-    })
+        })
+    }
+    
 }
 
 function goldCollision(){
@@ -1566,4 +1693,167 @@ function goldCollision(){
         player.gold += gold.gold
         destroy(gold)
     })
+}
+
+function menuHighlight(previousTabTag, currentTabTag){
+    const previousTab = get(previousTabTag)
+    const currentTab = get(currentTabTag)
+
+    previousTab[0].color = rgb(242,255,230)
+    currentTab[0].color = rgb(255,102,102)
+}
+
+function buyStat(currentTab, playerStats, gold_att, gold_def, gold_speed, gold_hp, player_att_stat, player_def_stat, player_speed_stat, player_hp_stat, player_gold_stat){
+    if(currentTab == 0){
+        //check gold
+        price = Math.pow(2, playerStats.att - 1)
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.att++
+            future_price = Math.pow(2, playerStats.att - 1)
+            if(future_price > 999){
+                gold_att.text = 999         
+            }
+            else{
+                gold_att.text = future_price
+            }
+            player_att_stat.text = playerStats.att
+            player_gold_stat.text = playerStats.gold
+        }
+        else{
+            notEnoughGold()
+        }
+    }
+    else if(currentTab == 1){
+        //check gold
+        price = Math.pow(2, playerStats.def - 1)
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.def++
+            future_price = Math.pow(2, playerStats.def - 1)
+            if(future_price > 999){
+                gold_def.text = 999         
+            }
+            else{
+                gold_def.text = future_price
+            }
+            player_def_stat.text = playerStats.def
+            player_gold_stat.text = playerStats.gold
+        }
+        else{
+            notEnoughGold()
+        }
+    }
+    else if(currentTab == 2){
+        //check gold
+        price = Math.pow(2, playerStats.speed / 5 - 2)
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.speed += 5
+            future_price = Math.pow(2, playerStats.speed / 5 - 2)
+            if(future_price > 999){
+                gold_speed.text = 999         
+            }
+            else{
+                gold_speed.text = future_price
+            }
+            player_speed_stat.text = playerStats.speed
+            player_gold_stat.text = playerStats.gold
+        }
+        else{
+            notEnoughGold()
+        }
+    }
+    else if(currentTab == 3){
+        //check gold
+        price = Math.pow(2, playerStats.max_health / 5 - 2)
+        if(playerStats.gold >= price){
+            if(price > 999){
+                playerStats.gold -= 999         
+            }
+            else{
+                playerStats.gold -= price
+            }
+            playerStats.max_health += 5
+            future_price = Math.pow(2, playerStats.max_health / 5 - 2)
+            if(future_price > 999){
+                gold_hp.text = 999         
+            }
+            else{
+                gold_hp.text = future_price
+            }
+            player_hp_stat.text = playerStats.max_health
+            player_gold_stat.text = playerStats.gold
+        }
+        else{
+            notEnoughGold()
+        }
+    }
+}
+
+function notEnoughGold(){
+    add([
+        text("Vous n'avez pas assez d'or!!", {size: 20}),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        color(255, 255, 0),
+        z(100),
+        lifespan(0.5)
+    ])
+    add([
+        rect(350,50),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        z(51),
+        color(0,0,0),
+        lifespan(0.5)
+    ])
+}
+
+function spawnEnnemies(numberOfBats, numberOfSlimes){
+ //0,0 à 770, 810
+    for(let i = 0; i < numberOfBats; i++){
+        monsterCreated = false
+        while(monsterCreated == false){
+            let pos = vec2(rand(770), rand(810))
+            let bat = addBat(pos)
+            let colisionEvent = bat.onCollide("*", (bat) => {
+                destroy(bat)
+            })
+            if(bat != NaN){
+                monsterCreated = true
+                colisionEvent.cancel()
+            }
+        }
+    }
+
+    for(let i = 0; i < numberOfSlimes; i++){
+        monsterCreated = false
+        while(monsterCreated == false){
+            let pos = vec2(rand(770), rand(810))
+            let slime = addSlime(pos)
+            let colisionEvent = slime.onCollide("*", (slime) => {
+                destroy(slime)
+            })
+            if(slime != NaN){
+                monsterCreated = true
+                colisionEvent.cancel()
+            }
+        }
+    }
 }
