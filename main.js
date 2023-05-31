@@ -192,6 +192,15 @@ loadSpriteAtlas("sprites/tilesets/Door1.png", {
     }
 })
 
+loadSpriteAtlas("sprites/tilesets/Dungeon_B.png", {
+    "stairs":{
+        x: 96,
+        y: 0,
+        height: 48,
+        width: 48,
+    }
+})
+
 loadSprite("top_right_wall", "sprites/background/top_right_wall.png")
 loadSprite("top_left_wall", "sprites/background/top_left_wall.png")
 loadSprite("bottom_right_wall", "sprites/background/bottom_right_wall.png")
@@ -523,7 +532,14 @@ scene("house", () => {
         onKeyPress("space", () => {
             go("shop")
     })
+
+    //Potion go donjon
     
+    
+})
+
+onKeyPress("p", () => {
+    go("donjon")
 })
 })
 
@@ -787,7 +803,7 @@ scene("donjon", () => {
             ]
         }
         })
-        //Potion de retour pour MJ
+        //Potion de retour maison pour MJ
         onKeyPress("p", () => {
           go("house")
     })
@@ -1809,4 +1825,24 @@ function spawnEnnemies(numberOfBats, numberOfSlimes){
             }
         }
     }
+}
+
+function spwanStairs(){
+    //0,0 à 770, 810
+            while(monsterCreated == false){
+               let pos = (55,55)//vec2(rand(770), rand(810))
+               let stairs = add([
+                sprite("stairs",),
+                pos(pos),
+                anchor("center"),
+                scale(0.25)
+            ]);
+               let colisionEvent = stairs.onCollide("*", (stairs) => {
+                   destroy(stairs)
+               })
+               if(stairs != NaN){
+                   monsterCreated = true
+                   colisionEvent.cancel()
+            }
+   }
 }
