@@ -532,21 +532,14 @@ scene("house", () => {
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
-            go("donjon")
+            go("shop")
     })
-
-    //Potion go donjon
-    
-    
 })
 
 onKeyPress("p", () => {
     go("donjon")
 })
-            go("shop")
-        })
 
-    })
 })
 
 scene("donjon", () => {
