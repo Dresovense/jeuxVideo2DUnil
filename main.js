@@ -530,7 +530,7 @@ scene("house", () => {
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
-            go("shop")
+            go("donjon")
     })
 
     //Potion go donjon
@@ -803,15 +803,19 @@ scene("donjon", () => {
             ]
         }
         })
-        //Potion de retour maison pour MJ
-        onKeyPress("p", () => {
-          go("house")
+    //Potion de retour maison pour MJ
+    onKeyPress("p", () => {
+        go("house")
     })
 
+    spawnStairs()
+    spawnEnnemies(4,3)
+    enemyBehavior(player, sword); 
 
-        spawnEnnemies(4,3)
-        enemyBehavior(player, sword); 
-
+    //Action on stairs contact
+    onCollide("stairs", "player", () => {
+        go("house")
+    })
 
 
     //collisions (monster and items)
@@ -1412,6 +1416,19 @@ function map_generator(){
     }
 }
 
+function addStairs(position){
+//add stairs
+    stairs = add([
+        sprite("stairs"),
+        pos(position),
+        anchor("center"),
+        scale(0.5),
+        area(),
+        "stairs",
+    ])
+    return stairs
+}
+
 function addBat(position){
 //add enemy bat
     bat = add([
@@ -1440,6 +1457,7 @@ function addBat(position){
             currentAnimation: "",
         }
     ]);
+
     
     // Set the enemy's behavior to run continuously
     loop(randi(1,3), () => {
@@ -1827,22 +1845,18 @@ function spawnEnnemies(numberOfBats, numberOfSlimes){
     }
 }
 
-function spwanStairs(){
+function spawnStairs(){
     //0,0 à 770, 810
+            monsterCreated = false
             while(monsterCreated == false){
-               let pos = (55,55)//vec2(rand(770), rand(810))
-               let stairs = add([
-                sprite("stairs",),
-                pos(pos),
-                anchor("center"),
-                scale(0.25)
-            ]);
+               let pos = vec2(rand(770), rand(810))
+               let stairs = addStairs(pos)
                let colisionEvent = stairs.onCollide("*", (stairs) => {
                    destroy(stairs)
                })
                if(stairs != NaN){
                    monsterCreated = true
                    colisionEvent.cancel()
-            }
+        }
    }
 }
