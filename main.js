@@ -268,6 +268,10 @@ loadSpriteAtlas("sprites/objects/sword.png", {
 
 loadSprite("start", "start/starting_screen.png")
 
+loadSound("house_theme", "assets/sound/house_theme.mp3")
+loadSound("battle_theme", "assets/sound/battle_theme.mp3")
+loadSound("end_theme", "assets/sound/end_theme.mp3")
+
 scene("house", () => {
     //Create player, movement, and level
     let direction = vec2(0, 0)    //changer selon la position de départ
