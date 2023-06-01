@@ -1073,6 +1073,10 @@ scene("start", () => {
     })
 })
 
+scene("end", () => {
+    
+})
+
 let hasKey = false
 const dialog = addDialog()
 
