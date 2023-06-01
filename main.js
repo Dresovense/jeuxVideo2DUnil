@@ -192,6 +192,15 @@ loadSpriteAtlas("sprites/tilesets/Door1.png", {
     }
 })
 
+loadSpriteAtlas("sprites/tilesets/Dungeon_B.png", {
+    "stairs":{
+        x: 96,
+        y: 0,
+        height: 48,
+        width: 48,
+    }
+})
+
 loadSprite("top_right_wall", "sprites/background/top_right_wall.png")
 loadSprite("top_left_wall", "sprites/background/top_left_wall.png")
 loadSprite("bottom_right_wall", "sprites/background/bottom_right_wall.png")
@@ -523,6 +532,17 @@ scene("house", () => {
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
+            go("donjon")
+    })
+
+    //Potion go donjon
+    
+    
+})
+
+onKeyPress("p", () => {
+    go("donjon")
+})
             go("shop")
         })
 
@@ -787,15 +807,23 @@ scene("donjon", () => {
                 "wall",
             ]
         }
+
+
     })
     //Potion de retour pour MJ
     onKeyPress("p", () => {
         go("house")
     })
 
+    spawnStairs()
+    spawnEnnemies(4,3)
+    enemyBehavior(player, sword); 
 
-    spawnEnnemies(4, 3)
-    enemyBehavior(player, sword);
+    //Action on stairs contact
+    onCollide("stairs", "player", () => {
+        go("house")
+    })
+
 
 
     //collisions (monster and items)
@@ -1401,6 +1429,21 @@ function map_generator() {
     }
 }
 
+
+function addStairs(position){
+//add stairs
+    stairs = add([
+        sprite("stairs"),
+        pos(position),
+        anchor("center"),
+        scale(0.5),
+        area(),
+        "stairs",
+    ])
+    return stairs
+}
+
+
 function addBat(position) {
     //add enemy bat
     bat = add([
@@ -1429,7 +1472,6 @@ function addBat(position) {
             currentAnimation: "",
         }
     ]);
-
     // Set the enemy's behavior to run continuously
     loop(randi(1, 3), () => {
         let directions = [RIGHT, LEFT, UP, DOWN]
@@ -1789,4 +1831,20 @@ function spawnEnnemies(numberOfBats, numberOfSlimes) {
             }
         }
     }
+}
+
+function spawnStairs(){
+    //0,0 à 770, 810
+            monsterCreated = false
+            while(monsterCreated == false){
+               let pos = vec2(rand(770), rand(810))
+               let stairs = addStairs(pos)
+               let colisionEvent = stairs.onCollide("*", (stairs) => {
+                   destroy(stairs)
+               })
+               if(stairs != NaN){
+                   monsterCreated = true
+                   colisionEvent.cancel()
+        }
+   }
 }
