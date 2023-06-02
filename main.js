@@ -268,11 +268,20 @@ loadSpriteAtlas("sprites/objects/sword.png", {
 
 loadSprite("start", "start/starting_screen.png")
 
-loadSound("house_theme", "assets/sound/house_theme.mp3")
-loadSound("battle_theme", "assets/sound/battle_theme.mp3")
-loadSound("end_theme", "assets/sound/end_theme.mp3")
+loadSound("house_theme", "sound/house_theme.mp3")
+loadSound("battle_theme", "sound/donjon_theme.mp3")
+loadSound("end_theme", "sound/end_theme.mp3")
+loadSound("menu_theme", "sound/menu_theme.mp3")
 
 scene("house", () => {
+    //Play music
+    let music = play("house_theme", {
+        loop: true,
+        paused: false,
+    })
+
+    
+
     //Create player, movement, and level
     let direction = vec2(0, 0)    //changer selon la position de départ
     let lastKnownDirection = vec2(0, 0)
@@ -536,17 +545,25 @@ scene("house", () => {
     })
     onCollide("house_door", "player", () => {
         onKeyPress("space", () => {
+            //music_house.paused = !music_house.paused
             go("shop")
     })
 })
 
+/* //Potion mj aller au donjon
 onKeyPress("p", () => {
     go("donjon")
-})
+}) */
 
 })
 
 scene("donjon", () => {
+    //Play donjon music
+    music = play("battle_theme", {
+        loop: true,
+        paused: false,
+    });
+
     //Add around the map walls
     add([
         sprite("top_left_wall",),
@@ -809,6 +826,7 @@ scene("donjon", () => {
     })
     //Potion de retour pour MJ
     onKeyPress("p", () => {
+        //music_donjon.paused = !music_donjon.paused
         go("house")
     })
 
@@ -1078,7 +1096,10 @@ scene("start", () => {
 })
 
 scene("end", () => {
-    
+    music = play("end_theme", {
+        loop: false,
+        paused: false,
+    })
 })
 
 let hasKey = false
