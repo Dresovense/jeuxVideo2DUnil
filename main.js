@@ -28,6 +28,26 @@ loadSpriteAtlas("sprites/characters/yasuna1.png", {
         }
     }
 })
+loadSpriteAtlas("sprites/characters/test perso 2.png", {
+    "pnj": {
+        x: 0,
+        y: 0,
+        width: 576,
+        height: 384,
+        sliceX: 12,
+        sliceY: 8,
+        anims: {
+            up: { from: 36, to: 38, loop: true },
+            left: { from: 12, to: 14, loop: true },
+            down: { from: 0, to: 2, loop: true },
+            right: { from: 24, to: 26, loop: true },
+            idle_up: { from: 37, to: 37, loop: true },
+            idle_down: { from: 1, to: 1, loop: true },
+            idle_left: { from: 13, to: 13, loop: true },
+            idle_right: { from: 25, to: 25, loop: true }
+        }
+    }
+})
 loadSpriteAtlas("sprites/characters/yasuna1 2.png", {
     "player1": {
         x: 0,
@@ -268,6 +288,9 @@ loadSpriteAtlas("sprites/objects/sword.png", {
 })
 
 loadSprite("start", "start/starting_screen.png")
+loadSprite("explanations", "start/explanations.png")
+loadSprite("end_home", "start/end_home.png")
+loadSprite("end_donjon", "start/end_donjon.png")
 
 loadSound("house_theme", "sound/house_theme.mp3")
 loadSound("battle_theme", "sound/donjon_theme.mp3")
@@ -287,14 +310,14 @@ scene("house", () => {
     let direction = vec2(0, 0)    //changer selon la position de départ
     let lastKnownDirection = vec2(0, 0)
 
-    //Chatbox door house test
+    /* //Chatbox door house test
     const characters = {
         "R": {
             sprite: "exit_house",
             msg: "Est-ce que tu veux sortir de la maison ?",
         },
 
-    }
+    } */
 
 
     //add player sprite
@@ -317,7 +340,8 @@ scene("house", () => {
             speed: 100,
             knockback: 20,
             gold: 0,
-            max_health: 50
+            max_health: 50,
+            is_talking: false,
         }
     ]);
     sword = add([
@@ -337,63 +361,81 @@ scene("house", () => {
     camPos(player.pos)
     //add controls and animations
     onKeyDown("right", () => {
-        player.move(RIGHT.scale(player.speed))
-        sword.move(RIGHT.scale(player.speed))
-        camPos(player.pos)
+        if(player.is_talking == false){
+            player.move(RIGHT.scale(player.speed))
+            sword.move(RIGHT.scale(player.speed))
+            camPos(player.pos)
+        }
         //background_position = background_following(player, background, background_position)
     })
     onKeyPress("right", () => {
-        direction = direction.add(RIGHT)
-        lastKnownDirection = check_movement(direction, player)
+        if(player.is_talking == false){
+            direction = direction.add(RIGHT)
+            lastKnownDirection = check_movement(direction, player)
+        }
     })
     onKeyRelease("right", () => {
+        
+        if(player.is_talking == false){
         direction = direction.sub(RIGHT)
         lastKnownDirection = check_movement(direction, player)
+        }
     })
 
     onKeyDown("left", () => {
+        if(player.is_talking == false){
         player.move(LEFT.scale(player.speed))
         sword.move(LEFT.scale(player.speed))
         camPos(player.pos)
+        }
         //background_position = background_following(player, background, background_position)
     })
     onKeyPress("left", () => {
+        
+        if(player.is_talking == false){
         direction = direction.add(LEFT)
-        lastKnownDirection = check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)}
     })
     onKeyRelease("left", () => {
+        if(player.is_talking == false){
         direction = direction.sub(LEFT)
-        lastKnownDirection = check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)}
     })
 
     onKeyDown("up", () => {
+        if(player.is_talking == false){
         player.move(UP.scale(player.speed))
         sword.move(UP.scale(player.speed))
-        camPos(player.pos)
+        camPos(player.pos)}
         //background_position = background_following(player, background, background_position)
     })
     onKeyPress("up", () => {
+        if(player.is_talking == false){
         direction = direction.add(UP)
-        lastKnownDirection = check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)}
     })
     onKeyRelease("up", () => {
+        if(player.is_talking == false){
         direction = direction.sub(UP)
-        lastKnownDirection = check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)}
     })
 
     onKeyDown("down", () => {
+        if(player.is_talking == false){
         player.move(DOWN.scale(player.speed))
         sword.move(DOWN.scale(player.speed))
-        camPos(player.pos)
+        camPos(player.pos) }
         //background_position = background_following(player, background, background_position)
     })
     onKeyPress("down", () => {
+        if(player.is_talking == false){
         direction = direction.add(DOWN)
-        lastKnownDirection = check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player) }
     })
     onKeyRelease("down", () => {
+        if(player.is_talking == false){
         direction = direction.sub(DOWN)
-        lastKnownDirection = check_movement(direction, player)
+        lastKnownDirection = check_movement(direction, player)}
     })
 
     //background moves with the player
@@ -442,6 +484,7 @@ scene("house", () => {
                 scale(0.5),
                 area(),
                 body({ isStatic: true }),
+                "bed",
             ],
             "H": () => [
                 sprite("bed2"),
@@ -449,6 +492,7 @@ scene("house", () => {
                 scale(0.5),
                 area(),
                 body({ isStatic: true }),
+                "bed",
             ],
             "I": () => [
                 sprite("bed3"),
@@ -456,6 +500,7 @@ scene("house", () => {
                 scale(0.5),
                 area(),
                 body({ isStatic: true }),
+                "bed",
             ],
             "J": () => [
                 sprite("bed4"),
@@ -463,6 +508,7 @@ scene("house", () => {
                 scale(0.5),
                 area(),
                 body({ isStatic: true }),
+                "bed",
             ],
             "K": () => [
                 sprite("wall_inside3"),
@@ -522,9 +568,12 @@ scene("house", () => {
                 sprite("exit_house"),
                 anchor("center"),
                 scale(0.5),
-                area(),
+                area({
+                    offset: vec2(0, 12),
+                }),
                 body({ isStatic: true }),
-                "house_door"
+                "house_door",
+
             ]
         },
 
@@ -544,12 +593,63 @@ scene("house", () => {
             }
         }, */
     })
+
+    //pnj
+    let pnj = add([
+        sprite("pnj", { anim: "idle_down" }),
+        pos(390, 150),
+        anchor("center"),
+        area({
+            shape: new Rect(vec2(0), 32, 32),
+            offset: vec2(0, 12),
+        }),
+        scale(0.5),
+        body({isStatic: true}),
+        "pnj",
+        {
+            lines: [
+                "Je voudrais que tu restes avec nous!",
+                "Tu pourrais aller dormir!",
+                "Mais si partir est vraiment ce que tu veux",
+                "tu peux sortir par la porte."
+            ]
+        }
+    ]);
+
     onCollide("house_door", "player", () => {
-        onKeyPress("space", () => {
             //music_house.paused = !music_house.paused
-            go("shop")
+        go("shop")
     })
-})
+
+    let event
+    onCollide("bed", "player", () => {
+        event = onKeyPress("space", () => {
+            player.is_talking = true
+            const lines = [
+                "Hmmm, est-ce que finalement je voudrais partir à l'aventure?",
+                "(Si vous voulez rester avec votre famille, appuyez sur <r>)",
+            ]
+            startDialogue(lines, player)
+        })
+        onKeyPress("r", () => {
+            go("end_home")
+        })
+    })
+
+    onCollideEnd("bed","player", () => {
+        event.cancel()
+    })
+
+    onCollide("pnj", "player", (pnj) => {
+        event = onKeyPress("space", () => {
+            player.is_talking = true
+            startDialogue(pnj.lines, player)
+        })
+        console.log(player)
+    })
+    onCollideEnd("pnj", "player", () => {
+        event.cancel()
+    })
 
 /* //Potion mj aller au donjon
 onKeyPress("p", () => {
@@ -625,6 +725,7 @@ scene("donjon", () => {
     let lastKnownDirection = vec2(0, 0)
 
     let playerStats = JSON.parse(sessionStorage.getItem("playerStats"))
+    let currentLevel = sessionStorage.getItem("currentLevel")
 
     //add player sprite
     let player = add([
@@ -805,6 +906,32 @@ scene("donjon", () => {
         }
         modifiedCode.push(modifiedLine);
     }
+    console.log(JSON.parse(JSON.stringify(modifiedCode)))
+    let stairAdded = false
+    while(stairAdded == false){
+        let randomRow = randi(modifiedCode.length)
+        let randomColumn = randi(modifiedCode[randomRow].length)
+        console.log(randomRow)
+        console.log(randomColumn)
+        if(modifiedCode[randomRow][randomColumn] == " "){
+            let newArray = ""
+            let previousArray = modifiedCode.splice(randomRow, 1)
+            console.log(previousArray[0])
+            console.log(previousArray[0].length)
+            for(let i = 0; i < previousArray[0].length; i++){
+                if(i == randomColumn){
+                    newArray += "S"
+                }
+                else{
+                    newArray += previousArray[0][i]
+                }
+            }
+            console.log(newArray)
+            modifiedCode.splice(randomRow, 0, newArray)
+            stairAdded = true
+        }
+    }
+    console.log(modifiedCode)
 
     addLevel(modifiedCode, {
         tileWidth: 24,
@@ -825,6 +952,13 @@ scene("donjon", () => {
                 area(),
                 body({ isStatic: true }),
                 "wall",
+            ],
+            "S": () => [
+                sprite("stairs"),
+                anchor("center"),
+                scale(0.5),
+                area(),
+                "stairs",
             ]
         }
 
@@ -836,13 +970,22 @@ scene("donjon", () => {
         go("house")
     })
 
-    spawnStairs()
+    //spawnStairs()
     spawnEnnemies(4,3)
     enemyBehavior(player, sword); 
 
     //Action on stairs contact
     onCollide("stairs", "player", () => {
-        go("house")
+        currentLevel++
+        if(currentLevel > 3){
+            go("end")
+        }
+        else{
+            console.log(playerStats)
+            sessionStorage.setItem("currentLevel", currentLevel)
+            sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
+            go("donjon")
+        }
     })
 
 
@@ -920,7 +1063,7 @@ scene("shop", () => {
     ])
 
     let quit = add([
-        text("Press Space to start:", { size: 5 }),
+        text("Appuyez sur ESPACE pour commencer:", { size: 5 }),
         pos(10, 10),
         scale(2.5),
         color(0, 0, 0)
@@ -956,7 +1099,7 @@ scene("shop", () => {
     ])
 
     let player_hp_text = add([
-        text("HP:", { size: 15 }),
+        text("Vie:", { size: 15 }),
         pos(250, 170),
         color(0, 0, 0)
     ])
@@ -1036,7 +1179,7 @@ scene("shop", () => {
         "hp"
     ])
     let hp_text = add([
-        text("HP(+5)", { size: 27 }),
+        text("Vie(+5)", { size: 27 }),
         pos(40, 110),
         color(0, 0, 0)
     ])
@@ -1087,9 +1230,88 @@ scene("shop", () => {
 
 })
 
-scene("start", () => {
+scene("explanations", () => {
     //400x240
     let starting_screen = add([
+        sprite("explanations", { width: width(), height: height() }),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        z(-1)
+    ]);
+
+    onKeyPress("space", () => {
+        go("mediation_prototype")
+    })
+    
+    let playerStats = {
+        att: 1,
+        def: 1,
+        speed: 10,
+        knockback: 10,
+        gold: 10,
+        max_health: 10
+    }
+    sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
+    sessionStorage.setItem("currentLevel", 0)
+})
+
+scene("end_home", () => {
+    //400x240
+    let end_home = add([
+        sprite("end_home", { width: width(), height: height() }),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        z(-1)
+    ]);
+
+    onKeyPress("space", () => {
+        go("explanations")
+    })
+})
+
+//Demo end screen
+scene("end", () => {
+    music = play("end_theme", {
+        loop: false,
+        paused: false,
+    })
+
+    /* //Mettre un background
+    add([
+        sprite("sword_background"),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+    ])
+
+    add([
+	    text("Bravo, vous avez terminé la demo.        Si vous voulez le refaire en gardant vos stats, appuyez sur espace", {
+        size: 24, // 48 pixels tall
+        width: 320, // it'll wrap to next line when width exceeds this value
+        font: "sans-serif", // specify any font you loaded or browser built-in,
+    }),
+		pos(width() / 2, height() / 2),
+		anchor("center"),
+        z(10),
+        color(0,0,0),
+	]); */
+
+    let screen = add([
+        sprite("end_donjon", { width: width(), height: height() }),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        z(-1)
+    ]);
+
+    //Return house if space pressed
+    onKeyPress("space", () => {
+        go("house")
+    })
+})
+
+//Scene pour expliquer la médiation du jeu
+scene("mediation_prototype", () => {
+    //400x240
+    let screen = add([
         sprite("start", { width: width(), height: height() }),
         pos(width() / 2, height() / 2),
         anchor("center"),
@@ -1101,48 +1323,14 @@ scene("start", () => {
     })
 })
 
-//Demo end screen
-scene("end", () => {
-    music = play("end_theme", {
-        loop: false,
-        paused: false,
-    })
-
-    //Mettre un background
-    
-
-    add([
-	    text("Bravo, vous avez terminez l'étage de cette demo.        Si vous voulez le refaire en gardant vos stats, appuyez sur espace", {
-        size: 24, // 48 pixels tall
-        width: 320, // it'll wrap to next line when width exceeds this value
-        font: "sans-serif", // specify any font you loaded or browser built-in
-    }),
-		pos(width() / 2, height() / 2),
-		anchor("center"),
-	]);
-    //Return house if space pressed
-    onKeyPress("space", () => {
-        go("house")
-    })
-})
-
 let hasKey = false
-const dialog = addDialog()
+/* const dialog = addDialog() */
 
 
-let playerStats = {
-    att: 1,
-    def: 1,
-    speed: 10,
-    knockback: 10,
-    gold: 10,
-    max_health: 10
-}
-sessionStorage.setItem("playerStats", JSON.stringify(playerStats))
 
-go('start')
+go('explanations')
 
-//Hide background when text appear
+/* //Hide background when text appear
 function addDialog() {
     const h = 160
     const pad = 16
@@ -1183,7 +1371,7 @@ function addDialog() {
             txt.destroy()
         },
     }
-}
+} */
 
 function check_movement(direction, player) {
     if (direction.y == 1) {
@@ -1511,7 +1699,7 @@ function addBat(position) {
             att: 2,
             def: 3,
             speed: 4,
-            knockback: 1,
+            knockback: 2,
             drops: {
                 gold: 5
             },
@@ -1881,16 +2069,57 @@ function spawnEnnemies(numberOfBats, numberOfSlimes) {
 
 function spawnStairs(){
     //0,0 à 770, 810
-            monsterCreated = false
-            while(monsterCreated == false){
-               let pos = vec2(rand(770), rand(810))
-               let stairs = addStairs(pos)
-               let colisionEvent = stairs.onCollide("*", (stairs) => {
-                   destroy(stairs)
-               })
-               if(stairs != NaN){
-                   monsterCreated = true
-                   colisionEvent.cancel()
+    monsterCreated = false
+    while(monsterCreated == false){
+        let pos = vec2(rand(770), rand(810))
+        let stairs = addStairs(pos)
+        let colisionEvent = onCollideUpdate("stairs", "wall", (stairs) => {
+        console.log("here")
+            destroy(stairs)
+        })
+        let colisionEvent2 = onCollideUpdate("stairs", "wall_top", (stairs) => {
+        console.log("here")
+            destroy(stairs)
+        })
+        if(stairs != NaN){
+            monsterCreated = true
+            colisionEvent.cancel()
+            colisionEvent2.cancel()
         }
-   }
+    }
+}
+
+function startDialogue(lines_in_here, player){
+    // Text bubble
+    const textbox = add([
+        rect(width() - 20, 50, { radius: 32 }),
+        anchor("center"),
+        fixed(),
+        pos(center().x, height() - 30),
+        outline(4),
+    ])
+
+    // Text
+    const txt = add([
+        text(lines_in_here[0], { size: 20, width: width() - 20, align: "center" }),
+        pos(textbox.pos),
+        fixed(),
+        anchor("center"),
+        color(0, 0, 0),
+    ])
+
+    let currentDialogue = 0
+
+    let event = onKeyPress("v", () => {
+        currentDialogue++
+        if(currentDialogue < lines_in_here.length){
+            txt.text = lines_in_here[currentDialogue]
+        }
+        else{
+            console.log("her")
+            destroy(textbox)
+            destroy(txt)
+            player.is_talking = false  
+        }
+    })
 }
