@@ -211,6 +211,7 @@ loadSprite("inbetween_wall_front", "sprites/background/inbetween_wall_front.png"
 
 loadSprite("ground", "sprites/background/crystal_tile.png")
 loadSprite("house_ground", "sprites/background/house_background3.png")
+loadSprite("sword_background", "sprites/background/sword_background.png")
 
 
 loadSpriteAtlas("sprites/ennemies/Monster.png", {
@@ -554,6 +555,11 @@ scene("house", () => {
 onKeyPress("p", () => {
     go("donjon")
 }) */
+
+//Potion mj aller au end
+onKeyPress("e", () => {
+    go("end")
+})
 
 })
 
@@ -1095,10 +1101,28 @@ scene("start", () => {
     })
 })
 
+//Demo end screen
 scene("end", () => {
     music = play("end_theme", {
         loop: false,
         paused: false,
+    })
+
+    //Mettre un background
+    
+
+    add([
+	    text("Bravo, vous avez terminez l'étage de cette demo.        Si vous voulez le refaire en gardant vos stats, appuyez sur espace", {
+        size: 24, // 48 pixels tall
+        width: 320, // it'll wrap to next line when width exceeds this value
+        font: "sans-serif", // specify any font you loaded or browser built-in
+    }),
+		pos(width() / 2, height() / 2),
+		anchor("center"),
+	]);
+    //Return house if space pressed
+    onKeyPress("space", () => {
+        go("house")
     })
 })
 
