@@ -2,7 +2,7 @@ kaboom({
     width: 400,
     height: 240,
     scale: 2.5,
-    debug: true,
+    debug: false,
 });
 
 
@@ -657,9 +657,9 @@ onKeyPress("p", () => {
 }) */
 
 //Potion mj aller au end
-onKeyPress("e", () => {
+/* onKeyPress("e", () => {
     go("end")
-})
+}) */
 
 })
 
@@ -965,10 +965,10 @@ scene("donjon", () => {
 
     })
     //Potion de retour pour MJ
-    onKeyPress("p", () => {
+    /* onKeyPress("p", () => {
         //music_donjon.paused = !music_donjon.paused
         go("house")
-    })
+    }) */
 
     //spawnStairs()
     spawnEnnemies(4,3)
